@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="DVD Scanner">
 <meta name="theme-color" content="#0f172a">
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMWUzYTVmIi8+PHRleHQgeD0iOTAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIj7wn5Ok</link>
 <title>DVD Lager Scanner</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
@@ -20,7 +19,6 @@
     -webkit-tap-highlight-color: transparent;
   }
   html { height: -webkit-fill-available; }
-
   .header {
     background: linear-gradient(135deg, #1e3a5f, #1e40af);
     padding: 16px 20px; text-align: center;
@@ -29,26 +27,22 @@
   }
   .header h1 { font-size: 20px; font-weight: 700; }
   .header .subtitle { font-size: 12px; color: #93c5fd; margin-top: 4px; }
-
   .current-box {
     background: #1e293b; margin: 12px; border-radius: 12px;
     padding: 16px; border: 1px solid #334155;
   }
   .current-box .label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-  .box-value {
-    font-size: 28px; font-weight: 800; color: #60a5fa; margin-top: 4px;
-  }
+  .box-value { font-size: 28px; font-weight: 800; color: #60a5fa; margin-top: 4px; }
   .box-value.empty { color: #f59e0b; font-size: 16px; font-weight: 600; }
   .current-box .detail { font-size: 13px; color: #94a3b8; margin-top: 4px; }
   .box-dvd-count { font-size: 12px; color: #4ade80; margin-top: 6px; font-weight: 600; }
-
   .actions { display: flex; gap: 10px; margin: 12px; flex-wrap: wrap; }
   .btn {
     flex: 1; min-width: 130px; padding: 14px 16px; border: none; border-radius: 10px;
     font-size: 15px; font-weight: 600; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: transform 0.1s, opacity 0.1s;
-    -webkit-appearance: none;
+    -webkit-appearance: none; position: relative; overflow: hidden;
   }
   .btn:active { transform: scale(0.96); opacity: 0.85; }
   .btn-primary { background: #2563eb; color: white; }
@@ -59,25 +53,10 @@
   .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
   .btn-sm { padding: 10px 14px; font-size: 13px; min-width: auto; }
   .btn-icon { font-size: 20px; }
-
-  .scanner-container {
-    margin: 12px; border-radius: 12px; overflow: hidden;
-    display: none; background: #000; position: relative;
+  .hidden-input {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer; z-index: 2;
   }
-  .scanner-container.active { display: block; }
-  #reader { width: 100%; }
-  #reader video { border-radius: 12px; }
-  .scanner-hint {
-    text-align: center; padding: 8px; font-size: 13px;
-    color: #93c5fd; background: rgba(30,58,95,0.9);
-  }
-  .stop-scan-btn {
-    position: absolute; top: 10px; right: 10px; z-index: 10;
-    background: rgba(0,0,0,0.7); border: none; color: white;
-    width: 36px; height: 36px; border-radius: 50%; font-size: 18px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-
   .scan-status {
     margin: 8px 12px; padding: 12px 16px; border-radius: 10px;
     font-size: 14px; font-weight: 600; text-align: center;
@@ -86,19 +65,16 @@
   .scan-status.success { display: block; background: #052e16; color: #4ade80; border: 1px solid #166534; }
   .scan-status.error { display: block; background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; }
   .scan-status.info { display: block; background: #172554; color: #93c5fd; border: 1px solid #1e40af; }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-
+  .scan-status.loading { display: block; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .manual-input { margin: 12px; display: none; }
   .manual-input.active { display: block; }
   .input-group { display: flex; gap: 8px; }
   .input-group input {
     flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #475569;
-    background: #1e293b; color: #e2e8f0; font-size: 16px;
-    -webkit-appearance: none;
+    background: #1e293b; color: #e2e8f0; font-size: 16px; -webkit-appearance: none;
   }
   .input-group input::placeholder { color: #64748b; }
-
   .stats-bar { display: flex; gap: 8px; margin: 12px; }
   .stat {
     flex: 1; background: #1e293b; border-radius: 10px; padding: 12px;
@@ -106,19 +82,16 @@
   }
   .stat .num { font-size: 24px; font-weight: 800; color: #60a5fa; }
   .stat .lbl { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-
   .section-header {
     margin: 16px 12px 8px; font-size: 13px; color: #94a3b8;
     text-transform: uppercase; letter-spacing: 1px;
     display: flex; justify-content: space-between; align-items: center;
   }
-
   .scanned-list { margin: 0 12px; }
   .scanned-item {
     background: #1e293b; border-radius: 10px; padding: 12px 14px;
     margin-bottom: 8px; border: 1px solid #334155;
-    display: flex; gap: 12px; align-items: flex-start;
-    animation: fadeIn 0.3s;
+    display: flex; gap: 12px; align-items: flex-start; animation: fadeIn 0.3s;
   }
   .scanned-item.highlight { border-color: #2563eb; background: #1e2d4a; }
   .scanned-item .item-content { flex: 1; min-width: 0; }
@@ -127,84 +100,48 @@
   .item-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
   .item-field {
     background: #0f172a; border: 1px solid #334155; border-radius: 6px;
-    color: #e2e8f0; padding: 8px 10px; font-size: 14px; width: 100%;
-    -webkit-appearance: none;
+    color: #e2e8f0; padding: 8px 10px; font-size: 14px; width: 100%; -webkit-appearance: none;
   }
   .item-field::placeholder { color: #475569; }
   .item-field:focus { border-color: #2563eb; outline: none; }
   select.item-field { background: #0f172a; }
-
   .delete-btn {
     background: none; border: none; color: #64748b; font-size: 22px;
     cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1;
   }
   .delete-btn:active { color: #ef4444; }
-
   .divider { height: 1px; background: #334155; margin: 16px 12px; }
-
   .export-section { margin: 20px 12px; }
-
   .toast {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
     background: #16a34a; color: white; padding: 12px 24px; border-radius: 12px;
     font-weight: 600; font-size: 14px; z-index: 1000;
-    animation: toastAnim 2.2s forwards;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    white-space: nowrap;
+    animation: toastAnim 2.2s forwards; box-shadow: 0 4px 20px rgba(0,0,0,0.5); white-space: nowrap;
   }
   @keyframes toastAnim {
     0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
     12% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    82% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    82% { opacity: 1; } 100% { opacity: 0; }
   }
-
-  .empty-state {
-    text-align: center; padding: 40px 20px; color: #475569;
-  }
+  .empty-state { text-align: center; padding: 40px 20px; color: #475569; }
   .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
   .empty-state .msg { font-size: 14px; line-height: 1.5; }
-
-  .install-hint {
-    background: #172554; margin: 12px; padding: 12px 16px; border-radius: 10px;
-    border: 1px solid #1e40af; font-size: 13px; color: #93c5fd;
-    display: none; line-height: 1.5;
-  }
-  .install-hint b { color: #60a5fa; }
-  .install-hint .close-hint {
-    float: right; background: none; border: none; color: #93c5fd;
-    font-size: 18px; cursor: pointer; margin: -4px -4px 0 8px;
-  }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>📦 DVD Lager Scanner</h1>
-  <div class="subtitle">Box-QR scannen → DVD-EANs scannen → CSV exportieren</div>
-</div>
-
-<div class="install-hint" id="installHint">
-  <button class="close-hint" onclick="dismissInstallHint()">×</button>
-  <b>Tipp:</b> Tippe auf <b>Teilen</b> (⬆️) → <b>"Zum Home-Bildschirm"</b> um die App wie eine echte App zu nutzen!
+  <div class="subtitle">Box-QR fotografieren → DVD-EANs fotografieren → CSV Export</div>
 </div>
 
 <div class="stats-bar">
-  <div class="stat">
-    <div class="num" id="totalCount">0</div>
-    <div class="lbl">DVDs gesamt</div>
-  </div>
-  <div class="stat">
-    <div class="num" id="boxCount">0</div>
-    <div class="lbl">Boxen belegt</div>
-  </div>
-  <div class="stat">
-    <div class="num" id="sessionCount">0</div>
-    <div class="lbl">Diese Session</div>
-  </div>
+  <div class="stat"><div class="num" id="totalCount">0</div><div class="lbl">DVDs gesamt</div></div>
+  <div class="stat"><div class="num" id="boxCount">0</div><div class="lbl">Boxen belegt</div></div>
+  <div class="stat"><div class="num" id="sessionCount">0</div><div class="lbl">Diese Session</div></div>
 </div>
 
-<div class="current-box" id="boxDisplay">
+<div class="current-box">
   <div class="label">Aktuelle Box</div>
   <div class="box-value empty" id="boxValue">⚠️ Noch keine Box gescannt</div>
   <div class="detail" id="boxDetail"></div>
@@ -212,42 +149,38 @@
 </div>
 
 <div class="actions">
-  <button class="btn btn-primary" onclick="startScan('qr')" id="btnQr">
-    <span class="btn-icon">📦</span> Box scannen
+  <button class="btn btn-primary">
+    <span class="btn-icon">📦</span> Box-QR scannen
+    <input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="handlePhoto(this,'qr')">
   </button>
-  <button class="btn btn-success" id="btnEan" onclick="startScan('ean')" disabled>
-    <span class="btn-icon">📀</span> DVD scannen
+  <button class="btn btn-success" id="btnEanPhoto">
+    <span class="btn-icon">📀</span> DVD-EAN scannen
+    <input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="handlePhoto(this,'ean')" id="eanInput">
   </button>
-</div>
-
-<div class="scanner-container" id="scannerContainer">
-  <button class="stop-scan-btn" onclick="stopScanner()">✕</button>
-  <div id="reader"></div>
-  <div class="scanner-hint" id="scannerHint">📦 Richte die Kamera auf den QR-Code der Box</div>
 </div>
 
 <div class="scan-status" id="scanStatus"></div>
 
-<div class="manual-input" id="manualInput">
-  <div class="input-group">
-    <input type="text" id="manualEan" placeholder="EAN manuell eingeben..." inputmode="numeric" pattern="[0-9]*">
-    <button class="btn btn-success btn-sm" onclick="addManualEan()">✓</button>
-  </div>
-</div>
-
 <div class="actions" style="margin-top:4px">
   <button class="btn btn-secondary btn-sm" onclick="toggleManual()">
-    <span class="btn-icon">⌨️</span> Manuell eingeben
+    <span class="btn-icon">⌨️</span> EAN manuell
   </button>
-  <button class="btn btn-secondary btn-sm" onclick="startScan('ean_continuous')" id="btnBatch" disabled>
-    <span class="btn-icon">⚡</span> Schnell-Scan
+  <button class="btn btn-secondary btn-sm" onclick="manualBoxInput()">
+    <span class="btn-icon">📝</span> Box manuell
   </button>
+</div>
+
+<div class="manual-input" id="manualInput">
+  <div class="input-group">
+    <input type="text" id="manualEan" placeholder="EAN eingeben..." inputmode="numeric">
+    <button class="btn btn-success btn-sm" onclick="addManualEan()">✓</button>
+  </div>
 </div>
 
 <div class="divider"></div>
 
 <div class="section-header">
-  <span id="listLabel">Gescannte DVDs</span>
+  <span>Gescannte DVDs</span>
   <span id="filterInfo" style="font-size:12px"></span>
 </div>
 
@@ -260,321 +193,142 @@
 
 <div class="export-section">
   <div class="actions" style="margin:0">
-    <button class="btn btn-warning" onclick="exportCSV()">
-      <span class="btn-icon">📥</span> CSV Export
-    </button>
-    <button class="btn btn-danger btn-sm" onclick="clearAll()">
-      <span class="btn-icon">🗑️</span> Löschen
-    </button>
+    <button class="btn btn-warning" onclick="exportCSV()"><span class="btn-icon">📥</span> CSV Export</button>
+    <button class="btn btn-danger btn-sm" onclick="clearAll()"><span class="btn-icon">🗑️</span> Löschen</button>
   </div>
 </div>
 
 <script>
-let currentBox = null;
-let scannedItems = [];
-let sessionScanned = 0;
-let scanner = null;
-let scanMode = null;
-let isScanning = false;
+let currentBox = null, scannedItems = [], sessionScanned = 0;
 
 function loadData() {
-  try {
-    const saved = localStorage.getItem('dvd_inventory_v2');
-    if (saved) scannedItems = JSON.parse(saved);
-  } catch(e) {}
+  try { const s = localStorage.getItem('dvd_inv_v4'); if (s) scannedItems = JSON.parse(s); } catch(e) {}
   updateUI();
 }
-
 function saveData() {
+  try { localStorage.setItem('dvd_inv_v4', JSON.stringify(scannedItems)); } catch(e) {}
+}
+
+function showToast(m) {
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div'); t.className='toast'; t.textContent=m;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2300);
+}
+function showStatus(m,type) {
+  const el=document.getElementById('scanStatus'); el.textContent=m; el.className='scan-status '+type;
+  if(type!=='loading') setTimeout(()=>{el.className='scan-status';},4000);
+}
+
+async function handlePhoto(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+  showStatus('🔍 Code wird erkannt...','loading');
   try {
-    localStorage.setItem('dvd_inventory_v2', JSON.stringify(scannedItems));
-  } catch(e) {}
-}
-
-function showToast(msg) {
-  document.querySelectorAll('.toast').forEach(t => t.remove());
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2300);
-}
-
-function showStatus(msg, type) {
-  const el = document.getElementById('scanStatus');
-  el.textContent = msg;
-  el.className = 'scan-status ' + type;
-  if (type !== 'info') setTimeout(() => { el.className = 'scan-status'; }, 3000);
-}
-
-function clearStatus() {
-  document.getElementById('scanStatus').className = 'scan-status';
-}
-
-async function startScan(mode) {
-  if (isScanning) await stopScanner();
-
-  scanMode = mode;
-  const container = document.getElementById('scannerContainer');
-  const hint = document.getElementById('scannerHint');
-
-  if (mode === 'qr') {
-    hint.textContent = '📦 Richte die Kamera auf den QR-Code der Box';
-  } else {
-    hint.textContent = '📀 Richte die Kamera auf den EAN-Barcode der DVD';
+    const result = await Html5Qrcode.scanFile(file, false);
+    processResult(result, type);
+  } catch(err) {
+    showStatus('❌ Kein Code erkannt. Nah ran, scharf fotografieren und nochmal versuchen.','error');
   }
-
-  container.classList.add('active');
-  isScanning = true;
-
-  scanner = new Html5Qrcode("reader");
-
-  const isEan = mode === 'ean' || mode === 'ean_continuous';
-  const config = {
-    fps: 15,
-    qrbox: isEan ? { width: 280, height: 100 } : { width: 220, height: 220 },
-    aspectRatio: 1.0,
-    formatsToSupport: isEan
-      ? [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
-         Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-         Html5QrcodeSupportedFormats.CODE_128]
-      : [Html5QrcodeSupportedFormats.QR_CODE]
-  };
-
-  try {
-    await scanner.start(
-      { facingMode: "environment" },
-      config,
-      onScanSuccess,
-      () => {}
-    );
-  } catch (err) {
-    showStatus('Kamera-Zugriff fehlgeschlagen. Bitte in den Safari-Einstellungen die Kamera erlauben.', 'error');
-    container.classList.remove('active');
-    isScanning = false;
-  }
-}
-
-async function stopScanner() {
-  if (scanner) {
-    try { await scanner.stop(); } catch(e) {}
-    scanner = null;
-  }
-  document.getElementById('scannerContainer').classList.remove('active');
-  isScanning = false;
-}
-
-let lastScanTime = 0;
-async function onScanSuccess(decodedText) {
-  // Debounce: ignore scans within 1.5s
-  const now = Date.now();
-  if (now - lastScanTime < 1500) return;
-  lastScanTime = now;
-
-  // Vibrate for feedback
-  if (navigator.vibrate) navigator.vibrate(100);
-
-  if (scanMode === 'qr') {
-    await stopScanner();
-    if (/^[A-D]-[1-5]-B[1-6]$/.test(decodedText)) {
-      currentBox = decodedText;
-      updateBoxDisplay();
-      showToast('📦 Box ' + decodedText + ' ausgewählt');
-      document.getElementById('btnEan').disabled = false;
-      document.getElementById('btnBatch').disabled = false;
-      // Auto-start DVD scanning
-      setTimeout(() => startScan('ean'), 600);
-    } else {
-      showStatus('"' + decodedText + '" ist kein gültiger Box-Code (Format: A-1-B1)', 'error');
-    }
-
-  } else {
-    // EAN mode
-    const duplicate = scannedItems.find(i => i.ean === decodedText && i.lagerplatz === currentBox);
-    if (duplicate) {
-      showStatus('⚠️ ' + decodedText + ' ist bereits in Box ' + currentBox, 'error');
-      return;
-    }
-
-    const item = {
-      lagerplatz: currentBox,
-      ean: decodedText,
-      titel: '',
-      zustand: 'Gut',
-      status: 'Nicht gelistet',
-      datum: new Date().toLocaleDateString('de-DE'),
-      id: Date.now()
-    };
-    scannedItems.unshift(item);
-    sessionScanned++;
-    saveData();
-    updateUI();
-    showToast('📀 ' + decodedText + ' erfasst');
-
-    if (scanMode === 'ean') {
-      // Single scan mode: stop, let user see result
-      await stopScanner();
-      showStatus('✅ DVD erfasst! Scanne die nächste oder trage den Titel ein.', 'success');
-      // Auto-restart after short delay
-      setTimeout(() => { if (!isScanning) startScan('ean'); }, 1500);
-    }
-    // ean_continuous: keep scanning without stopping
-  }
-}
-
-function addManualEan() {
-  const input = document.getElementById('manualEan');
-  const ean = input.value.trim();
-  if (!ean) return;
-  if (!currentBox) { showStatus('Bitte zuerst eine Box scannen!', 'error'); return; }
-
-  const duplicate = scannedItems.find(i => i.ean === ean && i.lagerplatz === currentBox);
-  if (duplicate) { showStatus('⚠️ ' + ean + ' ist bereits in Box ' + currentBox, 'error'); return; }
-
-  scannedItems.unshift({
-    lagerplatz: currentBox, ean: ean, titel: '', zustand: 'Gut',
-    status: 'Nicht gelistet', datum: new Date().toLocaleDateString('de-DE'), id: Date.now()
-  });
-  sessionScanned++;
-  saveData();
-  updateUI();
-  showToast('📀 ' + ean + ' erfasst');
   input.value = '';
-  input.focus();
+}
+
+function processResult(text, type) {
+  if (type==='qr') {
+    if (/^[A-D]-[1-5]-B[1-6]$/.test(text)) {
+      currentBox = text;
+      updateBoxDisplay();
+      showToast('📦 Box '+text+' ausgewählt');
+      showStatus('✅ Box '+text+' erkannt! Jetzt DVDs scannen.','success');
+    } else {
+      showStatus('"'+text+'" ist kein gültiger Box-Code (z.B. A-1-B1)','error');
+    }
+  } else {
+    if (!currentBox) { showStatus('Bitte zuerst eine Box scannen!','error'); return; }
+    if (scannedItems.find(i=>i.ean===text && i.lagerplatz===currentBox)) {
+      showStatus('⚠️ '+text+' ist bereits in Box '+currentBox,'error'); return;
+    }
+    scannedItems.unshift({
+      lagerplatz:currentBox, ean:text, titel:'', zustand:'Gut',
+      status:'Nicht gelistet', datum:new Date().toLocaleDateString('de-DE'), id:Date.now()
+    });
+    sessionScanned++; saveData(); updateUI();
+    showToast('📀 '+text+' erfasst');
+    showStatus('✅ EAN '+text+' erfasst!','success');
+  }
 }
 
 function toggleManual() {
-  const el = document.getElementById('manualInput');
-  el.classList.toggle('active');
-  if (el.classList.contains('active')) document.getElementById('manualEan').focus();
+  const el=document.getElementById('manualInput'); el.classList.toggle('active');
+  if(el.classList.contains('active')) document.getElementById('manualEan').focus();
 }
-
-function updateField(id, field, value) {
-  const item = scannedItems.find(i => i.id === id);
-  if (item) { item[field] = value; saveData(); }
+function addManualEan() {
+  const input=document.getElementById('manualEan'), ean=input.value.trim();
+  if(!ean) return;
+  if(!currentBox){showStatus('Bitte zuerst eine Box scannen!','error');return;}
+  if(scannedItems.find(i=>i.ean===ean&&i.lagerplatz===currentBox)){showStatus('⚠️ Bereits vorhanden','error');return;}
+  scannedItems.unshift({lagerplatz:currentBox,ean,titel:'',zustand:'Gut',status:'Nicht gelistet',datum:new Date().toLocaleDateString('de-DE'),id:Date.now()});
+  sessionScanned++; saveData(); updateUI();
+  showToast('📀 '+ean+' erfasst'); input.value=''; input.focus();
 }
-
-function deleteItem(id) {
-  scannedItems = scannedItems.filter(i => i.id !== id);
-  saveData();
-  updateUI();
+function manualBoxInput() {
+  const code=prompt('Box-Code eingeben (z.B. A-1-B1):');
+  if(!code)return;
+  const c=code.trim().toUpperCase();
+  if(/^[A-D]-[1-5]-B[1-6]$/.test(c)){currentBox=c;updateBoxDisplay();showToast('📦 Box '+c+' ausgewählt');}
+  else showStatus('"'+code+'" ist kein gültiger Box-Code','error');
 }
 
 function updateBoxDisplay() {
-  const boxVal = document.getElementById('boxValue');
-  const boxDetail = document.getElementById('boxDetail');
-  const boxDvdCount = document.getElementById('boxDvdCount');
-
-  if (currentBox) {
-    const parts = currentBox.split('-');
-    boxVal.textContent = currentBox;
-    boxVal.className = 'box-value';
-    boxDetail.textContent = 'Regal ' + parts[0] + ' | Ebene ' + parts[1] + ' | Box ' + parts[2];
-    const count = scannedItems.filter(i => i.lagerplatz === currentBox).length;
-    boxDvdCount.textContent = count + ' / 23 DVDs in dieser Box';
-  } else {
-    boxVal.textContent = '⚠️ Noch keine Box gescannt';
-    boxVal.className = 'box-value empty';
-    boxDetail.textContent = '';
-    boxDvdCount.textContent = '';
-  }
+  const v=document.getElementById('boxValue'),d=document.getElementById('boxDetail'),dc=document.getElementById('boxDvdCount');
+  if(currentBox){const p=currentBox.split('-');v.textContent=currentBox;v.className='box-value';
+    d.textContent='Regal '+p[0]+' | Ebene '+p[1]+' | Box '+p[2];
+    dc.textContent=scannedItems.filter(i=>i.lagerplatz===currentBox).length+' / 23 DVDs';
+  } else {v.textContent='⚠️ Noch keine Box gescannt';v.className='box-value empty';d.textContent='';dc.textContent='';}
 }
+function updateField(id,f,val){const i=scannedItems.find(x=>x.id===id);if(i){i[f]=val;saveData();}}
+function deleteItem(id){scannedItems=scannedItems.filter(i=>i.id!==id);saveData();updateUI();}
 
 function updateUI() {
-  document.getElementById('totalCount').textContent = scannedItems.length;
-  const boxes = new Set(scannedItems.map(i => i.lagerplatz));
-  document.getElementById('boxCount').textContent = boxes.size;
-  document.getElementById('sessionCount').textContent = sessionScanned;
-
+  document.getElementById('totalCount').textContent=scannedItems.length;
+  document.getElementById('boxCount').textContent=new Set(scannedItems.map(i=>i.lagerplatz)).size;
+  document.getElementById('sessionCount').textContent=sessionScanned;
   updateBoxDisplay();
-
-  const list = document.getElementById('scannedList');
-  const currentBoxItems = currentBox ? scannedItems.filter(i => i.lagerplatz === currentBox) : [];
-  const otherItems = currentBox ? scannedItems.filter(i => i.lagerplatz !== currentBox) : scannedItems;
-
-  document.getElementById('filterInfo').textContent = currentBox
-    ? currentBoxItems.length + ' in ' + currentBox + ' | ' + scannedItems.length + ' gesamt'
-    : scannedItems.length + ' gesamt';
-
-  if (scannedItems.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs gescannt.<br>Scanne zuerst einen Box-QR-Code,<br>dann die DVD-Barcodes.</div></div>';
-    return;
-  }
-
-  const displayItems = [...currentBoxItems, ...otherItems];
-  list.innerHTML = displayItems.map(item => {
-    const isCurrent = item.lagerplatz === currentBox;
-    return '<div class="scanned-item' + (isCurrent ? ' highlight' : '') + '">'
-      + '<div class="item-content">'
-      + '<div class="ean">' + item.ean + '</div>'
-      + '<div class="meta">📦 ' + item.lagerplatz + ' · ' + item.datum + '</div>'
-      + '<div class="item-fields">'
-      + '<input class="item-field" placeholder="DVD-Titel eingeben..." value="' + (item.titel || '').replace(/"/g, '&quot;') + '" onchange="updateField(' + item.id + ',\'titel\',this.value)">'
-      + '<select class="item-field" onchange="updateField(' + item.id + ',\'zustand\',this.value)">'
-      + '<option' + (item.zustand==='Neu'?' selected':'') + '>Neu</option>'
-      + '<option' + (item.zustand==='Sehr Gut'?' selected':'') + '>Sehr Gut</option>'
-      + '<option' + (item.zustand==='Gut'?' selected':'') + '>Gut</option>'
-      + '<option' + (item.zustand==='Akzeptabel'?' selected':'') + '>Akzeptabel</option>'
-      + '<option' + (item.zustand==='Defekt'?' selected':'') + '>Defekt</option>'
-      + '</select></div></div>'
-      + '<button class="delete-btn" onclick="deleteItem(' + item.id + ')">×</button></div>';
+  const list=document.getElementById('scannedList');
+  const cur=currentBox?scannedItems.filter(i=>i.lagerplatz===currentBox):[];
+  const other=currentBox?scannedItems.filter(i=>i.lagerplatz!==currentBox):scannedItems;
+  document.getElementById('filterInfo').textContent=currentBox?cur.length+' in '+currentBox+' | '+scannedItems.length+' gesamt':scannedItems.length+' gesamt';
+  if(!scannedItems.length){list.innerHTML='<div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs gescannt.</div></div>';return;}
+  list.innerHTML=[...cur,...other].map(item=>{
+    const hl=item.lagerplatz===currentBox;
+    return '<div class="scanned-item'+(hl?' highlight':'')+'">'
+      +'<div class="item-content"><div class="ean">'+item.ean+'</div>'
+      +'<div class="meta">📦 '+item.lagerplatz+' · '+item.datum+'</div>'
+      +'<div class="item-fields">'
+      +'<input class="item-field" placeholder="DVD-Titel..." value="'+(item.titel||'').replace(/"/g,'&quot;')+'" onchange="updateField('+item.id+',\'titel\',this.value)">'
+      +'<select class="item-field" onchange="updateField('+item.id+',\'zustand\',this.value)">'
+      +['Neu','Sehr Gut','Gut','Akzeptabel','Defekt'].map(z=>'<option'+(item.zustand===z?' selected':'')+'>'+z+'</option>').join('')
+      +'</select></div></div>'
+      +'<button class="delete-btn" onclick="deleteItem('+item.id+')">×</button></div>';
   }).join('');
 }
 
 function exportCSV() {
-  if (scannedItems.length === 0) { showStatus('Keine Daten zum Exportieren', 'error'); return; }
-
-  const header = 'Lagerplatz;DVD-Titel;EAN / Barcode;Zustand;eBay-Status;Einkaufspreis (€);Verkaufspreis (€);Gewinn (€);Datum Einlagerung;Bemerkung';
-  const rows = scannedItems.map(i =>
-    i.lagerplatz + ';' + (i.titel||'') + ';' + i.ean + ';' + i.zustand + ';' + (i.status||'Nicht gelistet') + ';;;;"' + i.datum + '";'
-  );
-  const csv = '\uFEFF' + header + '\n' + rows.join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'DVD_Scan_' + new Date().toISOString().slice(0,10) + '.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('📥 ' + scannedItems.length + ' DVDs exportiert');
+  if(!scannedItems.length){showStatus('Keine Daten','error');return;}
+  const h='Lagerplatz;DVD-Titel;EAN / Barcode;Zustand;eBay-Status;Einkaufspreis (€);Verkaufspreis (€);Gewinn (€);Datum Einlagerung;Bemerkung';
+  const r=scannedItems.map(i=>i.lagerplatz+';'+(i.titel||'')+';'+i.ean+';'+i.zustand+';'+(i.status||'Nicht gelistet')+';;;;'+i.datum+';');
+  const csv='\uFEFF'+h+'\n'+r.join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='DVD_Scan_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  showToast('📥 '+scannedItems.length+' DVDs exportiert');
 }
-
 function clearAll() {
-  if (confirm('Wirklich ALLE gescannten DVDs löschen? Das kann nicht rückgängig gemacht werden.')) {
-    scannedItems = [];
-    sessionScanned = 0;
-    currentBox = null;
-    document.getElementById('btnEan').disabled = true;
-    document.getElementById('btnBatch').disabled = true;
-    saveData();
-    updateUI();
-    showToast('🗑️ Alle Daten gelöscht');
+  if(confirm('Wirklich ALLE Daten löschen?')){
+    scannedItems=[];sessionScanned=0;currentBox=null;saveData();updateUI();showToast('🗑️ Gelöscht');
   }
 }
-
-// Install hint for iOS Safari
-function checkInstallHint() {
-  const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
-  const isStandalone = window.navigator.standalone === true;
-  const dismissed = localStorage.getItem('install_hint_dismissed');
-  if (isIos && !isStandalone && !dismissed) {
-    document.getElementById('installHint').style.display = 'block';
-  }
-}
-
-function dismissInstallHint() {
-  document.getElementById('installHint').style.display = 'none';
-  localStorage.setItem('install_hint_dismissed', 'true');
-}
-
-document.getElementById('manualEan').addEventListener('keyup', e => {
-  if (e.key === 'Enter') addManualEan();
-});
-
+document.getElementById('manualEan').addEventListener('keyup',e=>{if(e.key==='Enter')addManualEan();});
 loadData();
-checkInstallHint();
 </script>
 </body>
 </html>
