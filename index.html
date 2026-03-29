@@ -11,27 +11,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;min-height:-webkit-fill-available;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
-  html{height:-webkit-fill-available}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
   .header{background:linear-gradient(135deg,#1e3a5f,#1e40af);padding:14px 20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.3);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:12px}
   .header-logo{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0}
   .header-text{text-align:left}
   .header h1{font-size:19px;font-weight:700}
   .header .subtitle{font-size:11px;color:#93c5fd;margin-top:2px}
-  .current-box{background:#1e293b;margin:12px;border-radius:12px;padding:16px;border:1px solid #334155}
-  .current-box .label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px}
+  .card{background:#1e293b;margin:12px;border-radius:12px;padding:16px;border:1px solid #334155}
+  .card .label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
   .box-value{font-size:28px;font-weight:800;color:#60a5fa;margin-top:4px}
   .box-value.empty{color:#f59e0b;font-size:16px;font-weight:600}
-  .current-box .detail{font-size:13px;color:#94a3b8;margin-top:4px}
+  .card .detail{font-size:13px;color:#94a3b8;margin-top:4px}
   .box-dvd-count{font-size:12px;color:#4ade80;margin-top:6px;font-weight:600}
   .actions{display:flex;gap:10px;margin:12px;flex-wrap:wrap}
-  .btn{flex:1;min-width:130px;padding:14px 16px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.1s,opacity 0.1s;-webkit-appearance:none;position:relative;overflow:hidden}
+  .btn{flex:1;min-width:120px;padding:14px 16px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.1s,opacity 0.1s;-webkit-appearance:none;position:relative;overflow:hidden}
   .btn:active{transform:scale(0.96);opacity:0.85}
   .btn-primary{background:#2563eb;color:white}
   .btn-success{background:#16a34a;color:white}
   .btn-warning{background:#d97706;color:white}
   .btn-danger{background:#dc2626;color:white}
   .btn-secondary{background:#475569;color:white}
+  .btn-outline{background:transparent;color:#60a5fa;border:1px solid #334155}
   .btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
   .btn-sm{padding:10px 14px;font-size:13px;min-width:auto}
   .btn-icon{font-size:20px}
@@ -39,90 +39,315 @@
   .scan-status{margin:8px 12px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;display:none;animation:fadeIn 0.2s}
   .scan-status.success{display:block;background:#052e16;color:#4ade80;border:1px solid #166534}
   .scan-status.error{display:block;background:#450a0a;color:#fca5a5;border:1px solid #991b1b}
-  .scan-status.info{display:block;background:#172554;color:#93c5fd;border:1px solid #1e40af}
   .scan-status.loading{display:block;background:#1e293b;color:#e2e8f0;border:1px solid #475569}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .manual-input{margin:12px;display:none}
-  .manual-input.active{display:block}
-  .input-group{display:flex;gap:8px}
-  .input-group input{flex:1;padding:12px;border-radius:8px;border:1px solid #475569;background:#1e293b;color:#e2e8f0;font-size:16px;-webkit-appearance:none}
-  .input-group input::placeholder{color:#64748b}
   .stats-bar{display:flex;gap:8px;margin:12px}
   .stat{flex:1;background:#1e293b;border-radius:10px;padding:12px;text-align:center;border:1px solid #334155}
   .stat .num{font-size:24px;font-weight:800;color:#60a5fa}
   .stat .lbl{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
   .section-header{margin:16px 12px 8px;font-size:13px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
-  .scanned-list{margin:0 12px}
-  .scanned-item{background:#1e293b;border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid #334155;display:flex;gap:12px;align-items:flex-start;animation:fadeIn 0.3s}
-  .scanned-item.highlight{border-color:#2563eb;background:#1e2d4a}
-  .scanned-item .item-content{flex:1;min-width:0}
-  .scanned-item .ean{font-size:16px;font-weight:700;color:#f1f5f9;font-family:monospace}
-  .scanned-item .meta{font-size:12px;color:#94a3b8;margin-top:2px}
-  .item-fields{margin-top:8px;display:flex;flex-direction:column;gap:6px}
-  .item-field{background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;padding:8px 10px;font-size:14px;width:100%;-webkit-appearance:none}
-  .item-field::placeholder{color:#475569}
-  .item-field:focus{border-color:#2563eb;outline:none}
-  select.item-field{background:#0f172a}
-  .delete-btn{background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
-  .delete-btn:active{color:#ef4444}
-  .divider{height:1px;background:#334155;margin:16px 12px}
-  .export-section{margin:20px 12px}
-  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;z-index:1000;animation:toastAnim 2.2s forwards;box-shadow:0 4px 20px rgba(0,0,0,0.5);white-space:nowrap}
-  @keyframes toastAnim{0%{opacity:0;transform:translateX(-50%) translateY(20px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}82%{opacity:1}100%{opacity:0}}
-  .empty-state{text-align:center;padding:40px 20px;color:#475569}
-  .empty-state .icon{font-size:48px;margin-bottom:12px}
-  .empty-state .msg{font-size:14px;line-height:1.5}
+
+  /* DVD Entry Form */
+  .dvd-form{background:#1e293b;margin:12px;border-radius:12px;padding:16px;border:1px solid #334155;display:none}
+  .dvd-form.active{display:block}
+  .dvd-form .form-title{font-size:15px;font-weight:700;color:#60a5fa;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .form-row{margin-bottom:10px}
+  .form-label{font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:600}
+  .form-input{width:100%;padding:12px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#e2e8f0;font-size:16px;-webkit-appearance:none}
+  .form-input::placeholder{color:#64748b}
+  .form-input:focus{border-color:#2563eb;outline:none}
+  .form-input-row{display:flex;gap:8px}
+  .form-input-row .form-input{flex:1}
+  .form-select{width:100%;padding:12px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#e2e8f0;font-size:14px;-webkit-appearance:none}
+
   .scanner-container{margin:12px;border-radius:12px;overflow:hidden;display:none;background:#000;position:relative}
   .scanner-container.active{display:block}
   #reader{width:100%}
   .scanner-hint{text-align:center;padding:10px;font-size:13px;font-weight:600;color:#93c5fd;background:rgba(30,58,95,0.95)}
   .stop-scan-btn{position:absolute;top:10px;right:10px;z-index:10;background:rgba(220,38,38,0.9);border:none;color:white;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
-  .mode-toggle{display:flex;margin:12px;border-radius:10px;overflow:hidden;border:1px solid #334155}
-  .mode-btn{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#1e293b;color:#94a3b8;transition:all 0.2s}
-  .mode-btn.active{background:#2563eb;color:white}
+
+  .scanned-list{margin:0 12px}
+  .scanned-item{background:#1e293b;border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid #334155;display:flex;gap:12px;align-items:center;animation:fadeIn 0.3s}
+  .scanned-item.highlight{border-color:#2563eb;background:#1e2d4a}
+  .scanned-item .item-content{flex:1;min-width:0}
+  .scanned-item .item-title{font-size:15px;font-weight:600;color:#f1f5f9}
+  .scanned-item .item-title.empty{color:#64748b;font-style:italic}
+  .scanned-item .ean{font-size:13px;color:#60a5fa;font-family:monospace;margin-top:2px}
+  .scanned-item .meta{font-size:11px;color:#64748b;margin-top:2px}
+  .delete-btn{background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
+  .delete-btn:active{color:#ef4444}
+  .edit-btn{background:none;border:none;color:#60a5fa;font-size:18px;cursor:pointer;padding:4px;flex-shrink:0}
+
+  .divider{height:1px;background:#334155;margin:16px 12px}
+  .export-section{margin:20px 12px}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;z-index:1000;animation:toastAnim 2.2s forwards;box-shadow:0 4px 20px rgba(0,0,0,0.5);white-space:nowrap}
+  @keyframes toastAnim{0%{opacity:0;transform:translateX(-50%) translateY(20px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}82%{opacity:1}100%{opacity:0}}
+  .empty-state{text-align:center;padding:30px 20px;color:#475569}
+  .empty-state .icon{font-size:40px;margin-bottom:8px}
+  .empty-state .msg{font-size:13px;line-height:1.5}
+  .step-indicator{display:flex;align-items:center;gap:8px;margin:12px;padding:10px 16px;background:#172554;border-radius:10px;border:1px solid #1e40af;font-size:13px;color:#93c5fd;font-weight:600}
+  .step-num{background:#2563eb;color:white;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+  .step-done{background:#16a34a}
 </style>
 </head>
 <body>
 <div class="header">
   <img src="data:image/webp;base64,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" alt="Logo" class="header-logo">
-  <div class="header-text"><h1>My Nerdy Scanner</h1><div class="subtitle">Box-QR scannen → DVD-EANs scannen → CSV Export</div></div>
+  <div class="header-text"><h1>My Nerdy Scanner</h1><div class="subtitle">Lager-Verwaltung für DVDs</div></div>
 </div>
-<div class="stats-bar"><div class="stat"><div class="num" id="totalCount">0</div><div class="lbl">DVDs gesamt</div></div><div class="stat"><div class="num" id="boxCount">0</div><div class="lbl">Boxen belegt</div></div><div class="stat"><div class="num" id="sessionCount">0</div><div class="lbl">Diese Session</div></div></div>
-<div class="current-box"><div class="label">Aktuelle Box</div><div class="box-value empty" id="boxValue">⚠️ Noch keine Box gescannt</div><div class="detail" id="boxDetail"></div><div class="box-dvd-count" id="boxDvdCount"></div></div>
-<div class="mode-toggle"><button class="mode-btn active" id="modeLive" onclick="setMode('live')">📹 Live-Scanner</button><button class="mode-btn" id="modePhoto" onclick="setMode('photo')">📸 Foto-Modus</button></div>
-<div id="liveModeUI"><div class="actions"><button class="btn btn-primary" onclick="startLive('qr')"><span class="btn-icon">📦</span> Box scannen</button><button class="btn btn-success" id="btnEanLive" onclick="startLive('ean')" disabled><span class="btn-icon">📀</span> DVD scannen</button></div></div>
-<div id="photoModeUI" style="display:none"><div class="actions"><button class="btn btn-primary"><span class="btn-icon">📦</span> Box-QR fotografieren<input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="handlePhoto(this,'qr')"></button><button class="btn btn-success" id="btnEanPhoto"><span class="btn-icon">📀</span> DVD-EAN fotografieren<input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="handlePhoto(this,'ean')"></button></div></div>
-<div class="scanner-container" id="scannerContainer"><button class="stop-scan-btn" onclick="stopLive()">✕</button><div id="reader"></div><div class="scanner-hint" id="scannerHint">📦 Richte die Kamera auf den QR-Code</div></div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="num" id="totalCount">0</div><div class="lbl">DVDs</div></div>
+  <div class="stat"><div class="num" id="boxCount">0</div><div class="lbl">Boxen</div></div>
+  <div class="stat"><div class="num" id="sessionCount">0</div><div class="lbl">Session</div></div>
+</div>
+
+<!-- STEP 1: Box auswählen -->
+<div class="card">
+  <div class="label">Aktuelle Box</div>
+  <div class="box-value empty" id="boxValue">⚠️ Noch keine Box gescannt</div>
+  <div class="detail" id="boxDetail"></div>
+  <div class="box-dvd-count" id="boxDvdCount"></div>
+</div>
+
+<div id="stepIndicator" class="step-indicator">
+  <div class="step-num">1</div>
+  <span>Scanne zuerst den QR-Code auf deiner Box</span>
+</div>
+
+<div class="actions">
+  <button class="btn btn-primary" onclick="startLive('qr')"><span class="btn-icon">📦</span> Box-QR scannen</button>
+  <button class="btn btn-outline btn-sm" onclick="manualBoxInput()"><span class="btn-icon">📝</span> Manuell</button>
+</div>
+
+<!-- Live Scanner -->
+<div class="scanner-container" id="scannerContainer">
+  <button class="stop-scan-btn" onclick="stopLive()">✕</button>
+  <div id="reader"></div>
+  <div class="scanner-hint" id="scannerHint"></div>
+</div>
+
 <div class="scan-status" id="scanStatus"></div>
-<div class="actions" style="margin-top:4px"><button class="btn btn-secondary btn-sm" onclick="toggleManual()"><span class="btn-icon">⌨️</span> EAN manuell</button><button class="btn btn-secondary btn-sm" onclick="manualBoxInput()"><span class="btn-icon">📝</span> Box manuell</button></div>
-<div class="manual-input" id="manualInput"><div class="input-group"><input type="text" id="manualEan" placeholder="EAN eingeben..." inputmode="numeric"><button class="btn btn-success btn-sm" onclick="addManualEan()">✓</button></div></div>
+
+<!-- STEP 2: DVD Eingabe (nach Box-Scan sichtbar) -->
+<div class="dvd-form" id="dvdForm">
+  <div class="form-title">📀 DVD hinzufügen</div>
+  <div class="form-row">
+    <div class="form-label">EAN / Barcode</div>
+    <div class="form-input-row">
+      <input type="text" class="form-input" id="inputEan" placeholder="EAN eintippen oder scannen..." inputmode="numeric" autocomplete="off">
+      <button class="btn btn-primary btn-sm" style="flex:0;min-width:auto;padding:12px">
+        📷
+        <input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="handleEanPhoto(this)">
+      </button>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-label">DVD-Titel</div>
+    <input type="text" class="form-input" id="inputTitel" placeholder="z.B. Inception (2010)" autocomplete="off">
+  </div>
+  <div class="form-row">
+    <div class="form-label">Zustand</div>
+    <select class="form-select" id="inputZustand">
+      <option>Neu</option><option selected>Sehr Gut</option><option>Gut</option><option>Akzeptabel</option><option>Defekt</option>
+    </select>
+  </div>
+  <div class="actions" style="margin:12px 0 0">
+    <button class="btn btn-success" onclick="addDvd()"><span class="btn-icon">✓</span> DVD hinzufügen</button>
+  </div>
+</div>
+
 <div class="divider"></div>
-<div class="section-header"><span>Gescannte DVDs</span><span id="filterInfo" style="font-size:12px"></span></div>
-<div class="scanned-list" id="scannedList"><div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs gescannt.<br>Scanne zuerst einen Box-QR-Code,<br>dann die DVD-Barcodes.</div></div></div>
-<div class="export-section"><div class="actions" style="margin:0"><button class="btn btn-warning" onclick="exportCSV()"><span class="btn-icon">📥</span> CSV Export</button><button class="btn btn-danger btn-sm" onclick="clearAll()"><span class="btn-icon">🗑️</span> Löschen</button></div></div>
+
+<div class="section-header">
+  <span>Erfasste DVDs</span>
+  <span id="filterInfo" style="font-size:12px"></span>
+</div>
+
+<div class="scanned-list" id="scannedList">
+  <div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs erfasst.</div></div>
+</div>
+
+<div class="export-section">
+  <div class="actions" style="margin:0">
+    <button class="btn btn-warning" onclick="exportCSV()"><span class="btn-icon">📥</span> CSV Export</button>
+    <button class="btn btn-danger btn-sm" onclick="clearAll()"><span class="btn-icon">🗑️</span> Löschen</button>
+  </div>
+</div>
+
 <script>
-let currentBox=null,scannedItems=[],sessionScanned=0,scanner=null,isScanning=false,currentScanType=null,lastScanTime=0,currentMode='live';
-function loadData(){try{const s=localStorage.getItem('dvd_inv_v6');if(s)scannedItems=JSON.parse(s)}catch(e){}updateUI()}
-function saveData(){try{localStorage.setItem('dvd_inv_v6',JSON.stringify(scannedItems))}catch(e){}}
+let currentBox=null,scannedItems=[],sessionScanned=0,scanner=null,isScanning=false,lastScanTime=0;
+
+function loadData(){try{const s=localStorage.getItem('nerdy_v1');if(s)scannedItems=JSON.parse(s)}catch(e){}updateUI()}
+function saveData(){try{localStorage.setItem('nerdy_v1',JSON.stringify(scannedItems))}catch(e){}}
 function showToast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2300)}
 function showStatus(m,type){const el=document.getElementById('scanStatus');el.textContent=m;el.className='scan-status '+type;if(type!=='loading')setTimeout(()=>{el.className='scan-status'},4000)}
-function setMode(mode){currentMode=mode;document.getElementById('modeLive').className='mode-btn'+(mode==='live'?' active':'');document.getElementById('modePhoto').className='mode-btn'+(mode==='photo'?' active':'');document.getElementById('liveModeUI').style.display=mode==='live'?'block':'none';document.getElementById('photoModeUI').style.display=mode==='photo'?'block':'none';if(mode==='photo')stopLive()}
-async function startLive(type){if(isScanning)await stopLive();currentScanType=type;const container=document.getElementById('scannerContainer');const hint=document.getElementById('scannerHint');hint.textContent=type==='qr'?'📦 QR-Code in die Mitte halten':'📀 Barcode waagerecht in die Mitte halten – nah ran!';container.classList.add('active');isScanning=true;scanner=new Html5Qrcode("reader");const isEan=type==='ean';const config={fps:10,experimentalFeatures:{useBarCodeDetectorIfSupported:true}};if(!isEan){config.qrbox={width:220,height:220}}if(isEan){config.formatsToSupport=[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.ITF]}else{config.formatsToSupport=[Html5QrcodeSupportedFormats.QR_CODE]}try{await scanner.start({facingMode:"environment"},config,onLiveScan,()=>{})}catch(err){container.classList.remove('active');isScanning=false;showStatus('❌ Live-Kamera geht nicht. Wechsle zum Foto-Modus.','error');setMode('photo')}}
+
+// ===== BOX QR SCANNING (live) =====
+async function startLive(type){
+  if(isScanning)await stopLive();
+  const container=document.getElementById('scannerContainer');
+  document.getElementById('scannerHint').textContent='📦 QR-Code in die Mitte halten';
+  container.classList.add('active');
+  isScanning=true;
+  scanner=new Html5Qrcode("reader");
+  try{
+    await scanner.start({facingMode:"environment"},{
+      fps:10,
+      qrbox:{width:220,height:220},
+      formatsToSupport:[Html5QrcodeSupportedFormats.QR_CODE],
+      experimentalFeatures:{useBarCodeDetectorIfSupported:true}
+    },onQrScan,()=>{});
+  }catch(err){
+    container.classList.remove('active');isScanning=false;
+    showStatus('❌ Kamera geht nicht.','error');
+  }
+}
 async function stopLive(){if(scanner){try{await scanner.stop()}catch(e){}scanner=null}document.getElementById('scannerContainer').classList.remove('active');isScanning=false}
-async function onLiveScan(text){const now=Date.now();if(now-lastScanTime<2000)return;lastScanTime=now;if(navigator.vibrate)navigator.vibrate(150);if(currentScanType==='qr'){await stopLive();processResult(text,'qr');if(/^[A-D]-[1-5]-B[1-6]$/.test(text)){setTimeout(()=>startLive('ean'),800)}}else{processResult(text,'ean')}}
-async function handlePhoto(input,type){const file=input.files[0];if(!file)return;showStatus('🔍 Code wird erkannt...','loading');try{const result=await Html5Qrcode.scanFile(file,false);processResult(result,type)}catch(err){showStatus('❌ Kein Code erkannt. Nah ran und scharf fotografieren.','error')}input.value=''}
-function processResult(text,type){if(type==='qr'){if(/^[A-D]-[1-5]-B[1-6]$/.test(text)){currentBox=text;updateBoxDisplay();document.getElementById('btnEanLive').disabled=false;document.getElementById('btnEanPhoto').disabled=false;showToast('📦 Box '+text+' ausgewählt');showStatus('✅ Box '+text+' erkannt! Jetzt DVDs scannen.','success')}else{showStatus('"'+text+'" ist kein gültiger Box-Code (z.B. A-1-B1)','error')}}else{if(!currentBox){showStatus('Bitte zuerst eine Box scannen!','error');return}if(scannedItems.find(i=>i.ean===text&&i.lagerplatz===currentBox)){showStatus('⚠️ '+text+' bereits in Box '+currentBox,'error');return}scannedItems.unshift({lagerplatz:currentBox,ean:text,titel:'',zustand:'Gut',status:'Nicht gelistet',datum:new Date().toLocaleDateString('de-DE'),id:Date.now()});sessionScanned++;saveData();updateUI();showToast('📀 '+text+' erfasst');showStatus('✅ EAN '+text+' erfasst!','success')}}
-function toggleManual(){const el=document.getElementById('manualInput');el.classList.toggle('active');if(el.classList.contains('active'))document.getElementById('manualEan').focus()}
-function addManualEan(){const input=document.getElementById('manualEan'),ean=input.value.trim();if(!ean)return;if(!currentBox){showStatus('Bitte zuerst eine Box scannen!','error');return}if(scannedItems.find(i=>i.ean===ean&&i.lagerplatz===currentBox)){showStatus('⚠️ Bereits vorhanden','error');return}scannedItems.unshift({lagerplatz:currentBox,ean,titel:'',zustand:'Gut',status:'Nicht gelistet',datum:new Date().toLocaleDateString('de-DE'),id:Date.now()});sessionScanned++;saveData();updateUI();showToast('📀 '+ean+' erfasst');input.value='';input.focus()}
-function manualBoxInput(){const code=prompt('Box-Code eingeben (z.B. A-1-B1):');if(!code)return;const c=code.trim().toUpperCase();if(/^[A-D]-[1-5]-B[1-6]$/.test(c)){currentBox=c;updateBoxDisplay();document.getElementById('btnEanLive').disabled=false;document.getElementById('btnEanPhoto').disabled=false;showToast('📦 Box '+c+' ausgewählt')}else showStatus('"'+code+'" ist kein gültiger Box-Code','error')}
-function updateBoxDisplay(){const v=document.getElementById('boxValue'),d=document.getElementById('boxDetail'),dc=document.getElementById('boxDvdCount');if(currentBox){const p=currentBox.split('-');v.textContent=currentBox;v.className='box-value';d.textContent='Regal '+p[0]+' | Ebene '+p[1]+' | Box '+p[2];dc.textContent=scannedItems.filter(i=>i.lagerplatz===currentBox).length+' / 23 DVDs'}else{v.textContent='⚠️ Noch keine Box gescannt';v.className='box-value empty';d.textContent='';dc.textContent=''}}
-function updateField(id,f,val){const i=scannedItems.find(x=>x.id===id);if(i){i[f]=val;saveData()}}
+
+async function onQrScan(text){
+  const now=Date.now();if(now-lastScanTime<2000)return;lastScanTime=now;
+  if(navigator.vibrate)navigator.vibrate(150);
+  await stopLive();
+  if(/^[A-D]-[1-5]-B[1-6]$/.test(text)){
+    currentBox=text;
+    updateBoxDisplay();
+    document.getElementById('dvdForm').classList.add('active');
+    document.getElementById('stepIndicator').innerHTML='<div class="step-num step-done">✓</div><span>Box '+text+' aktiv – jetzt DVDs erfassen!</span>';
+    showToast('📦 Box '+text+' ausgewählt');
+    document.getElementById('inputEan').focus();
+  }else{
+    showStatus('"'+text+'" ist kein gültiger Box-Code','error');
+  }
+}
+
+// ===== EAN PHOTO SCAN =====
+async function handleEanPhoto(input){
+  const file=input.files[0];if(!file)return;
+  showStatus('🔍 EAN wird erkannt...','loading');
+  try{
+    const result=await Html5Qrcode.scanFile(file,false);
+    document.getElementById('inputEan').value=result;
+    showStatus('✅ EAN '+result+' erkannt!','success');
+    document.getElementById('inputTitel').focus();
+  }catch(err){
+    showStatus('❌ Kein Barcode erkannt. Bitte manuell eintippen.','error');
+    document.getElementById('inputEan').focus();
+  }
+  input.value='';
+}
+
+// ===== DVD HINZUFÜGEN =====
+function addDvd(){
+  const ean=document.getElementById('inputEan').value.trim();
+  const titel=document.getElementById('inputTitel').value.trim();
+  const zustand=document.getElementById('inputZustand').value;
+
+  if(!ean){showStatus('Bitte EAN eingeben!','error');document.getElementById('inputEan').focus();return}
+  if(!currentBox){showStatus('Bitte zuerst eine Box scannen!','error');return}
+
+  if(scannedItems.find(i=>i.ean===ean&&i.lagerplatz===currentBox)){
+    showStatus('⚠️ EAN '+ean+' ist bereits in Box '+currentBox,'error');return;
+  }
+
+  scannedItems.unshift({
+    lagerplatz:currentBox,ean,titel,zustand,
+    status:'Nicht gelistet',
+    datum:new Date().toLocaleDateString('de-DE'),
+    id:Date.now()
+  });
+  sessionScanned++;saveData();updateUI();
+  showToast('📀 '+(titel||ean)+' erfasst');
+
+  // Reset form for next DVD
+  document.getElementById('inputEan').value='';
+  document.getElementById('inputTitel').value='';
+  document.getElementById('inputEan').focus();
+}
+
+// ===== MANUAL BOX =====
+function manualBoxInput(){
+  const code=prompt('Box-Code eingeben (z.B. A-1-B1):');
+  if(!code)return;const c=code.trim().toUpperCase();
+  if(/^[A-D]-[1-5]-B[1-6]$/.test(c)){
+    currentBox=c;updateBoxDisplay();
+    document.getElementById('dvdForm').classList.add('active');
+    document.getElementById('stepIndicator').innerHTML='<div class="step-num step-done">✓</div><span>Box '+c+' aktiv – jetzt DVDs erfassen!</span>';
+    showToast('📦 Box '+c+' ausgewählt');
+    document.getElementById('inputEan').focus();
+  }else showStatus('"'+code+'" ist kein gültiger Box-Code','error');
+}
+
+// ===== UI =====
+function updateBoxDisplay(){
+  const v=document.getElementById('boxValue'),d=document.getElementById('boxDetail'),dc=document.getElementById('boxDvdCount');
+  if(currentBox){const p=currentBox.split('-');v.textContent=currentBox;v.className='box-value';
+    d.textContent='Regal '+p[0]+' | Ebene '+p[1]+' | Box '+p[2];
+    dc.textContent=scannedItems.filter(i=>i.lagerplatz===currentBox).length+' / 23 DVDs in dieser Box';
+  }else{v.textContent='⚠️ Noch keine Box gescannt';v.className='box-value empty';d.textContent='';dc.textContent=''}
+}
+
+function editItem(id){
+  const item=scannedItems.find(x=>x.id===id);if(!item)return;
+  const newTitle=prompt('Titel bearbeiten:',item.titel);
+  if(newTitle!==null){item.titel=newTitle;saveData();updateUI()}
+}
 function deleteItem(id){scannedItems=scannedItems.filter(i=>i.id!==id);saveData();updateUI()}
-function updateUI(){document.getElementById('totalCount').textContent=scannedItems.length;document.getElementById('boxCount').textContent=new Set(scannedItems.map(i=>i.lagerplatz)).size;document.getElementById('sessionCount').textContent=sessionScanned;updateBoxDisplay();const list=document.getElementById('scannedList');const cur=currentBox?scannedItems.filter(i=>i.lagerplatz===currentBox):[];const other=currentBox?scannedItems.filter(i=>i.lagerplatz!==currentBox):scannedItems;document.getElementById('filterInfo').textContent=currentBox?cur.length+' in '+currentBox+' | '+scannedItems.length+' gesamt':scannedItems.length+' gesamt';if(!scannedItems.length){list.innerHTML='<div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs gescannt.</div></div>';return}list.innerHTML=[...cur,...other].map(item=>{const hl=item.lagerplatz===currentBox;return'<div class="scanned-item'+(hl?' highlight':'')+'">'+'<div class="item-content"><div class="ean">'+item.ean+'</div>'+'<div class="meta">📦 '+item.lagerplatz+' · '+item.datum+'</div>'+'<div class="item-fields">'+'<input class="item-field" placeholder="DVD-Titel..." value="'+(item.titel||'').replace(/"/g,'&quot;')+'" onchange="updateField('+item.id+',\'titel\',this.value)">'+'<select class="item-field" onchange="updateField('+item.id+',\'zustand\',this.value)">'+'<option'+(item.zustand==='Neu'?' selected':'')+'>Neu</option><option'+(item.zustand==='Sehr Gut'?' selected':'')+'>Sehr Gut</option><option'+(item.zustand==='Gut'?' selected':'')+'>Gut</option><option'+(item.zustand==='Akzeptabel'?' selected':'')+'>Akzeptabel</option><option'+(item.zustand==='Defekt'?' selected':'')+'>Defekt</option>'+'</select></div></div>'+'<button class="delete-btn" onclick="deleteItem('+item.id+')">×</button></div>'}).join('')}
-function exportCSV(){if(!scannedItems.length){showStatus('Keine Daten','error');return}const h='Lagerplatz;DVD-Titel;EAN / Barcode;Zustand;eBay-Status;Einkaufspreis (€);Verkaufspreis (€);Gewinn (€);Datum Einlagerung;Bemerkung';const r=scannedItems.map(i=>i.lagerplatz+';'+(i.titel||'')+';'+i.ean+';'+i.zustand+';'+(i.status||'Nicht gelistet')+';;;;'+i.datum+';');const csv='\uFEFF'+h+'\n'+r.join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='DVD_Scan_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('📥 '+scannedItems.length+' DVDs exportiert')}
-function clearAll(){if(confirm('Wirklich ALLE Daten löschen?')){scannedItems=[];sessionScanned=0;currentBox=null;document.getElementById('btnEanLive').disabled=true;document.getElementById('btnEanPhoto').disabled=true;saveData();updateUI();showToast('🗑️ Gelöscht')}}
-document.getElementById('manualEan').addEventListener('keyup',e=>{if(e.key==='Enter')addManualEan()});
+
+function updateUI(){
+  document.getElementById('totalCount').textContent=scannedItems.length;
+  document.getElementById('boxCount').textContent=new Set(scannedItems.map(i=>i.lagerplatz)).size;
+  document.getElementById('sessionCount').textContent=sessionScanned;
+  updateBoxDisplay();
+  const list=document.getElementById('scannedList');
+  const cur=currentBox?scannedItems.filter(i=>i.lagerplatz===currentBox):[];
+  const other=currentBox?scannedItems.filter(i=>i.lagerplatz!==currentBox):scannedItems;
+  document.getElementById('filterInfo').textContent=currentBox?cur.length+' in '+currentBox+' | '+scannedItems.length+' gesamt':scannedItems.length+' gesamt';
+
+  if(!scannedItems.length){list.innerHTML='<div class="empty-state"><div class="icon">📀</div><div class="msg">Noch keine DVDs erfasst.</div></div>';return}
+
+  list.innerHTML=[...cur,...other].map(item=>{
+    const hl=item.lagerplatz===currentBox;
+    const displayTitle=item.titel||'Kein Titel';
+    const titleClass=item.titel?'item-title':'item-title empty';
+    return'<div class="scanned-item'+(hl?' highlight':'')+'">'
+      +'<div class="item-content">'
+      +'<div class="'+titleClass+'">'+displayTitle+'</div>'
+      +'<div class="ean">'+item.ean+'</div>'
+      +'<div class="meta">📦 '+item.lagerplatz+' · '+item.zustand+' · '+item.datum+'</div>'
+      +'</div>'
+      +'<button class="edit-btn" onclick="editItem('+item.id+')">✏️</button>'
+      +'<button class="delete-btn" onclick="deleteItem('+item.id+')">×</button>'
+      +'</div>';
+  }).join('');
+}
+
+function exportCSV(){
+  if(!scannedItems.length){showStatus('Keine Daten','error');return}
+  const h='Lagerplatz;DVD-Titel;EAN / Barcode;Zustand;eBay-Status;Einkaufspreis (€);Verkaufspreis (€);Gewinn (€);Datum Einlagerung;Bemerkung';
+  const r=scannedItems.map(i=>i.lagerplatz+';'+(i.titel||'')+';'+i.ean+';'+i.zustand+';'+(i.status||'Nicht gelistet')+';;;;'+i.datum+';');
+  const csv='\uFEFF'+h+'\n'+r.join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='DVD_Scan_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  showToast('📥 '+scannedItems.length+' DVDs exportiert');
+}
+function clearAll(){if(confirm('Wirklich ALLE Daten löschen?')){scannedItems=[];sessionScanned=0;currentBox=null;
+  document.getElementById('dvdForm').classList.remove('active');
+  document.getElementById('stepIndicator').innerHTML='<div class="step-num">1</div><span>Scanne zuerst den QR-Code auf deiner Box</span>';
+  saveData();updateUI();showToast('🗑️ Gelöscht')}}
+
+// Enter-Key shortcuts
+document.getElementById('inputEan').addEventListener('keyup',e=>{if(e.key==='Enter'){document.getElementById('inputTitel').focus()}});
+document.getElementById('inputTitel').addEventListener('keyup',e=>{if(e.key==='Enter'){addDvd()}});
 loadData();
+// Restore form state if box was previously selected
+if(scannedItems.length>0){
+  const lastBox=scannedItems[0].lagerplatz;
+  currentBox=lastBox;updateBoxDisplay();
+  document.getElementById('dvdForm').classList.add('active');
+  document.getElementById('stepIndicator').innerHTML='<div class="step-num step-done">✓</div><span>Box '+lastBox+' aktiv – jetzt DVDs erfassen!</span>';
+}
 </script>
 </body>
 </html>
