@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Nerdy Scanner">
@@ -12,20 +15,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding-bottom:100px;-webkit-tap-highlight-color:transparent}
 .header{background:linear-gradient(135deg,#1e3a5f,#1e40af);padding:14px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.3);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:12px}
 .header-logo{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0}
 .header-text{text-align:left}
 .header h1{font-size:19px;font-weight:700}
 .header .subtitle{font-size:11px;color:#93c5fd;margin-top:2px}
-.card{background:#1e293b;margin:12px;border-radius:12px;padding:16px;border:1px solid #334155}
-.card .card-title{font-size:14px;font-weight:700;color:#60a5fa;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px}
 .stat-card{background:#1e293b;border-radius:10px;padding:14px;text-align:center;border:1px solid #334155}
 .stat-card .num{font-size:22px;font-weight:800;color:#60a5fa}
 .stat-card .num.green{color:#4ade80}
 .stat-card .num.yellow{color:#fbbf24}
-.stat-card .num.red{color:#f87171}
 .stat-card .lbl{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
 .actions{display:flex;gap:10px;margin:12px;flex-wrap:wrap}
 .btn{flex:1;min-width:120px;padding:14px 16px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.1s,opacity 0.1s;-webkit-appearance:none;position:relative;overflow:hidden}
@@ -36,24 +36,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn-danger{background:#dc2626;color:white}
 .btn-secondary{background:#475569;color:white}
 .btn-outline{background:transparent;color:#60a5fa;border:1px solid #334155}
-.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.btn:disabled{opacity:0.35}
 .btn-sm{padding:10px 14px;font-size:13px;min-width:auto}
 .btn-icon{font-size:20px}
-.hidden-input{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
 .scan-status{margin:8px 12px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;display:none;animation:fadeIn 0.2s}
 .scan-status.success{display:block;background:#052e16;color:#4ade80;border:1px solid #166534}
 .scan-status.error{display:block;background:#450a0a;color:#fca5a5;border:1px solid #991b1b}
-.scan-status.loading{display:block;background:#1e293b;color:#e2e8f0;border:1px solid #475569}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .scanner-container{margin:12px;border-radius:12px;overflow:hidden;display:none;background:#000;position:relative}
 .scanner-container.active{display:block}
 #reader{width:100%}
 .scanner-hint{text-align:center;padding:10px;font-size:13px;font-weight:600;color:#93c5fd;background:rgba(30,58,95,0.95)}
 .stop-scan-btn{position:absolute;top:10px;right:10px;z-index:10;background:rgba(220,38,38,0.9);border:none;color:white;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
-.section-header{margin:16px 12px 8px;font-size:13px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
 .divider{height:1px;background:#334155;margin:16px 12px}
+.tabs{display:flex;margin:12px;border-radius:10px;overflow:hidden;border:1px solid #334155}
+.tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border:none;background:#1e293b;color:#94a3b8;transition:all 0.2s}
+.tab.active{background:#2563eb;color:white}
+.search-input{margin:0 12px 8px;padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#1e293b;color:#e2e8f0;font-size:14px;width:calc(100% - 24px);-webkit-appearance:none}
+.search-input::placeholder{color:#64748b}
+.search-input:focus{border-color:#2563eb;outline:none}
+.badge{display:inline-block;background:#dc2626;color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px}
+.section-header{margin:16px 12px 8px;font-size:13px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
 
-/* Box detail view */
 .box-detail{display:none;margin:12px;border-radius:12px;background:#1e293b;border:1px solid #334155;overflow:hidden}
 .box-detail.active{display:block}
 .box-header{background:linear-gradient(135deg,#1e3a5f,#1e40af);padding:16px;display:flex;justify-content:space-between;align-items:center}
@@ -64,38 +68,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .box-stat{flex:1;padding:12px;text-align:center;background:#1e293b}
 .box-stat .num{font-size:18px;font-weight:800;color:#60a5fa}
 .box-stat .lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
-.box-items{padding:12px}
-.box-item{padding:10px 12px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.box-items{padding:8px}
+.box-item{padding:10px 12px;border-bottom:1px solid #0f172a;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .box-item:last-child{border-bottom:none}
 .box-item .item-info{flex:1;min-width:0}
-.box-item .item-title{font-size:13px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.box-item .item-title{font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .box-item .item-meta{font-size:11px;color:#64748b;margin-top:2px}
-.box-item .item-price{font-size:15px;font-weight:800;color:#4ade80;flex-shrink:0}
 .box-item .item-cat{display:inline-block;font-size:9px;background:#334155;color:#94a3b8;padding:2px 6px;border-radius:4px;margin-top:3px}
+.box-item .item-price{font-size:15px;font-weight:800;color:#4ade80;flex-shrink:0}
 
-/* Item list */
-.item-list{margin:0 12px}
-.list-item{background:#1e293b;border-radius:8px;padding:10px 14px;margin-bottom:6px;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center}
-.list-item .li-title{font-size:13px;font-weight:600;color:#f1f5f9;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.list-item .li-price{font-size:14px;font-weight:700;color:#4ade80;margin-left:10px;flex-shrink:0}
-.list-item .li-sku{font-size:11px;color:#f59e0b;font-family:monospace}
+.list-item{background:#1e293b;border-radius:8px;padding:10px 14px;margin:0 12px 6px;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.list-item:active{background:#1e2d4a}
+.list-item .li-info{flex:1;min-width:0}
+.list-item .li-title{font-size:13px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-item .li-meta{font-size:11px;color:#64748b;margin-top:2px}
+.list-item .li-right{text-align:right;flex-shrink:0;margin-left:10px}
+.list-item .li-price{font-size:14px;font-weight:700;color:#4ade80}
+.list-item .li-sku{font-size:10px;color:#f59e0b;font-family:monospace}
 
 .empty-state{text-align:center;padding:30px 20px;color:#475569}
 .empty-state .icon{font-size:40px;margin-bottom:8px}
 .empty-state .msg{font-size:13px;line-height:1.5}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;z-index:1000;animation:toastAnim 2.2s forwards;box-shadow:0 4px 20px rgba(0,0,0,0.5);white-space:nowrap}
 @keyframes toastAnim{0%{opacity:0;transform:translateX(-50%) translateY(20px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}82%{opacity:1}100%{opacity:0}}
-
-/* Tab navigation */
-.tabs{display:flex;margin:12px;border-radius:10px;overflow:hidden;border:1px solid #334155}
-.tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border:none;background:#1e293b;color:#94a3b8;transition:all 0.2s}
-.tab.active{background:#2563eb;color:white}
-
-.search-input{margin:0 12px 8px;padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#1e293b;color:#e2e8f0;font-size:14px;width:calc(100% - 24px);-webkit-appearance:none}
-.search-input::placeholder{color:#64748b}
-.search-input:focus{border-color:#2563eb;outline:none}
-
-.badge{display:inline-block;background:#dc2626;color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px}
+.update-info{margin:12px;padding:10px 14px;border-radius:8px;background:#172554;border:1px solid #1e40af;font-size:11px;color:#93c5fd;text-align:center}
 </style>
 </head>
 <body>
@@ -104,7 +100,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="header-text"><h1>My Nerdy Scanner</h1><div class="subtitle">eBay Lager-Verwaltung</div></div>
 </div>
 
-<!-- STATS -->
 <div class="stats-grid">
   <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">Artikel</div></div>
   <div class="stat-card"><div class="num green" id="statValue">0€</div><div class="lbl">Gesamtwert</div></div>
@@ -112,15 +107,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="stat-card"><div class="num yellow" id="statUnassigned">0</div><div class="lbl">Ohne Stellplatz</div></div>
 </div>
 
-<!-- ACTIONS -->
 <div class="actions">
   <button class="btn btn-primary" onclick="startScan()"><span class="btn-icon">📦</span> Box scannen</button>
-  <button class="btn btn-warning"><span class="btn-icon">📂</span> CSV Import
-    <input type="file" accept=".csv" class="hidden-input" onchange="importCSV(this)">
-  </button>
+  <button class="btn btn-outline btn-sm" onclick="manualBox()"><span class="btn-icon">📝</span> Box manuell</button>
 </div>
 
-<!-- Scanner -->
 <div class="scanner-container" id="scannerContainer">
   <button class="stop-scan-btn" onclick="stopScan()">✕</button>
   <div id="reader"></div>
@@ -128,13 +119,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 <div class="scan-status" id="scanStatus"></div>
 
-<!-- BOX DETAIL VIEW -->
 <div class="box-detail" id="boxDetail">
   <div class="box-header">
-    <div>
-      <div class="box-code" id="bdCode"></div>
-      <div class="box-info" id="bdInfo"></div>
-    </div>
+    <div><div class="box-code" id="bdCode"></div><div class="box-info" id="bdInfo"></div></div>
     <button class="close-box" onclick="closeBox()">✕</button>
   </div>
   <div class="box-stats" id="bdStats"></div>
@@ -143,304 +130,133 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="divider"></div>
 
-<!-- TABS: Alle Boxen / Ohne Stellplatz / Alle Artikel -->
 <div class="tabs">
   <button class="tab active" id="tabBoxes" onclick="showTab('boxes')">📦 Boxen</button>
   <button class="tab" id="tabUnassigned" onclick="showTab('unassigned')">⚠️ Offen <span class="badge" id="badgeUn">0</span></button>
   <button class="tab" id="tabAll" onclick="showTab('all')">📋 Alle</button>
 </div>
 
-<input type="text" class="search-input" id="searchInput" placeholder="🔍 Suche nach Titel, SKU, eBay-Nr..." oninput="renderCurrentTab()">
+<input type="text" class="search-input" id="searchInput" placeholder="🔍 Suche nach Titel, SKU, Kategorie..." oninput="renderCurrentTab()">
 
-<!-- TAB CONTENT -->
 <div id="tabContent"></div>
 
-<!-- EXPORT -->
-<div class="divider"></div>
-<div class="actions">
-  <button class="btn btn-secondary btn-sm" onclick="exportData()"><span class="btn-icon">📥</span> Daten exportieren</button>
-  <button class="btn btn-danger btn-sm" onclick="clearAll()"><span class="btn-icon">🗑️</span> Alles löschen</button>
-</div>
+<div class="update-info" id="updateInfo"></div>
 
 <script>
-let items = [];
-let scanner = null;
-let isScanning = false;
-let lastScanTime = 0;
-let currentTab = 'boxes';
+// === EMBEDDED DATA ===
+const items = [{"id": "167962011477", "title": "Walt Disney Comic-Cars Quartett / Ravensburger / Kartenspiel vollständig! 1986", "sku": "", "price": 7.0, "condition": "Gebraucht", "category": "Moderne Kartenspiele", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167962020328", "title": "Scrabble Karten Reisespiel Mattel 100% vollständig", "sku": "", "price": 8.9, "condition": "Gebraucht", "category": "Gesellschaftsspiele", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167962239483", "title": "Toy Story 3 (DVD)", "sku": "", "price": 3.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167962264069", "title": "Das Bourne Ultimatum (DVD) - Neu & OVP", "sku": "", "price": 4.49, "condition": "Neu", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167962332623", "title": "Hellboy / DVD im Pappschuber / 2004", "sku": "", "price": 4.02, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167962342401", "title": "DVD  The 100 - Die komplette dritte Staffel # NEU & OVP noch in Folie!", "sku": "", "price": 7.49, "condition": "Neu", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167962353810", "title": "Weihnachten mit Big Brother von Big Brother Allstars | CD | Zustand gut", "sku": "", "price": 3.99, "condition": "Gut", "category": "CDs", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969044742", "title": "Tom Clancy's Splinter Cell: Double Agent (PC) Ubisoft", "sku": "", "price": 3.75, "condition": "Gut", "category": "PC- & Videospiele", "watchers": 0, "soldQty": 0, "ean": "3307210197788"}, {"id": "167969061449", "title": "Eberhofer - Schweinskopf al dente von Rita Falk (2017, DVD video)", "sku": "", "price": 4.29, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4009750227343"}, {"id": "167969068817", "title": "The Beatles - Love me do/ P.S. I love you UK 7'' Single", "sku": "", "price": 17.0, "condition": "Gebraucht", "category": "Schallplatten", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167969071676", "title": "The Beatles-From me to you 7 PS-1976 UK-Parlophone-R 5015", "sku": "", "price": 10.0, "condition": "Gebraucht", "category": "Schallplatten", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969072484", "title": "7\" THE BEATLES : I FEEL FINE / SHE'S A WOMAN  Vinyl Single  Made In UK", "sku": "", "price": 10.0, "condition": "Gebraucht", "category": "Schallplatten", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969108825", "title": "Bob der Baumeister - Bau Es Zusammen, Bob! DVD", "sku": "", "price": 3.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969110883", "title": "DVD Benjamin Blümchen als Babysitter / verliebt sich 2 Filme", "sku": "", "price": 3.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969151064", "title": "7 Fäuste des Todes – DVD – Martial Arts Klassiker – Kung-Fu Action – Rarität", "sku": "", "price": 2.4, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167969199633", "title": "Der Staatsfeind Nr. 1 – DVD ★ Wide Screen ★ Action/Thriller ★ Will Smith", "sku": "", "price": 3.39, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969204811", "title": "Lord of War – Händler des Todes – DVD ★ Nicolas Cage ★ Action/Drama ★", "sku": "", "price": 3.69, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969217701", "title": "Finding Nemo / Findet Nemo (Gameboy Advance, 2003) nur Modul ohne OVP", "sku": "", "price": 5.0, "condition": "Gut", "category": "PC- & Videospiele", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969256948", "title": "50 PC - CD ROM Spiele,  Logik und Denken - Gehirnjogging NEU & OVP!", "sku": "", "price": 5.99, "condition": "Neu", "category": "PC- & Videospiele", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969270004", "title": "Lucky # Slevin mit Josh Hartnett Morgan Freeman Bruce Willis | DVD | 2006", "sku": "", "price": 2.75, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969272786", "title": "Shaolin - Die Bruderschaft der schwarzen Spinne  (DVD)", "sku": "", "price": 2.6, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969293143", "title": "Der Pfad des Wikingers-Severed Ways DVD", "sku": "", "price": 3.69, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167969294770", "title": "From Dusk Till Dawn - gekürzte Fassung DVD", "sku": "", "price": 4.49, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167975006612", "title": "Coca- Cola Teambus - FIFA World Cup 2006 Neu und OVP Sammleredition", "sku": "", "price": 2.75, "condition": "Neu", "category": "Sonstige", "watchers": 4, "soldQty": 0, "ean": ""}, {"id": "167975015172", "title": "Coca-Cola Teambus 1954 Maßstab 1:87 Neu und OVP - Sammleredition", "sku": "", "price": 2.5, "condition": "Neu: Sonstige (siehe Artikelbeschreibung)", "category": "Autos, LKW & Busse", "watchers": 4, "soldQty": 0, "ean": ""}, {"id": "167976505200", "title": "McDonalds Alvin Chipmunk Gitarre (2009)  Junior Tüte Happy Meal Toys Mc Donalds", "sku": "", "price": 4.0, "condition": "Gebraucht", "category": "Spielzeug", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167977049929", "title": "Monopoly Buchformat Edition Brettspiel Parker Gesellschaftsspiel Vollständig", "sku": "", "price": 17.99, "condition": "Gebraucht", "category": "Gesellschaftsspiele", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167977055250", "title": "Sing ein Lied - Gesellschaftsspiel Schmidt Spiele / vollständig", "sku": "", "price": 7.5, "condition": "Gebraucht", "category": "Gesellschaftsspiele", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "167980126648", "title": "Europareise Ravensburger Brettspiel -Retro/Vintage- vollständig! gepflegt", "sku": "", "price": 11.0, "condition": "Gebraucht", "category": "Gesellschaftsspiele", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167980157494", "title": "Flottenmanöver von MB Spiele Reise Spiel Schiffe Versenken - vollständig", "sku": "", "price": 15.0, "condition": "Gebraucht", "category": "Gesellschaftsspiele", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "167989860875", "title": "Freddie Mercury – Love Kills, 7\" Vinyl / Schallplatte Single", "sku": "", "price": 4.5, "condition": "Gebraucht", "category": "Schallplatten", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168003815594", "title": "Brauerei Paulaner Bräu München MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.01, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168003819795", "title": "Brauerei Altenmünster Bier MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.01, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168003821185", "title": "Gottmannsgrüner Hefe Brauerei MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.01, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168003824086", "title": "Ahornberger Landbier Brauerei MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.98, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168003829639", "title": "Altenmünster Brauer-Bier MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004199206", "title": "Spezi ist Spitze! Brauerei MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Nichtalkoholische Getränke", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004209757", "title": "Höllensprudel Hollunder Naila MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004211945", "title": "Feines Ahornberger Landbier MB Actros HZ 1:87 Neu+OVP Mini Truck/Werbetruck Rar!", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004214234", "title": "Kaiserdom Bamberg Bier MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck Selten!", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 2, "soldQty": 0, "ean": ""}, {"id": "168004219568", "title": "Rhön Sprudel mini Werbetruck, MB Actros SZ \"Apple Plus \" 1:87 in OVP / Minitruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004221808", "title": "Brauerei Maisel Bayreuth MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004225927", "title": "Wolfra Fruchtsäfte Bayern MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004227582", "title": "Almdudler Kräuterlimonade MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004230641", "title": "Nordbräu Pro Bier MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck Rar / Selten", "sku": "", "price": 2.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004233785", "title": "Zwickl Bräu Bayreuth Bier MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.25, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004237730", "title": "Altfränkische Pflaume Likör MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004240088", "title": "Gräfs Fränkische Pflaume Likör MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.1, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004241988", "title": "Markgrafen Getränke Limit Franken Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Gebraucht", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168004243573", "title": "Bad Brambacher Wasser MB Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.18, "condition": "Neu", "category": "Nichtalkoholische Getränke", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008961762", "title": "Brauerei Nailaer Fichtenzäpfla Anhänger HZ 1:87 Neu+OVP Mini Truck/Werbetruck", "sku": "", "price": 5.99, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168008968130", "title": "Eschenbacher Bier HZ 1:87 Neu+OVP Mini Truck / Werbetruck / Nostalgie / Retro!", "sku": "", "price": 3.0, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008974025", "title": "Brauerei Leikeim Premium MB HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008975652", "title": "Brauerei Paulaner Original Münchner HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.25, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008979543", "title": "Brauerei Krombacher Nostalgie Edition HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168008982169", "title": "Brauerei Reichhold Edition Nr. 11 HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.49, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008983465", "title": "Rhön Sprudel mini Werbetruck, MB Actros SZ \"Apple Plus \" 1:87 in OVP / Minitruck", "sku": "", "price": 2.01, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008985598", "title": "Brauerei Veldensteiner HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.2, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168008992084", "title": "Förstina Sprudel HZ 1:87 Neu+OVP Mini Truck / Werbetruck / 2003", "sku": "", "price": 2.25, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010339363", "title": "Bayreuther Aktien Pils \"Party-Time\" HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.0, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010342330", "title": "Feines Ahornberger Landbier \"Winter\" HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010346875", "title": "Brauerei Eschenbacher Bier HZ 1:87 Neu+OVP Mini Truck / Werbetruck / Selten", "sku": "", "price": 2.1, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010349528", "title": "Bayreuther Aktien Pils Brauerei Scania HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010360335", "title": "Brauerei Maisel Bayreuth \"Weihnachten\" HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 1.9, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010365702", "title": "Original Jim Beam Limited Edition Nr. 3 HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.25, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010372310", "title": "Brauerei Sternquell \"Fasching\" Edition HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010373256", "title": "Markgrafen Getränke Limit Franken Actros HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.2, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010376400", "title": "Krombacher Sammleredition \"Partner Sport\"HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.01, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 2, "soldQty": 0, "ean": ""}, {"id": "168010379403", "title": "Brauerei Spaten Bräu Oktoberfestzug HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 1.7, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010385984", "title": "Franken Brunnen Mabella MAN HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Nichtalkoholische Getränke", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010388813", "title": "Bitburger Werbetruck 1:87 - Ford 9000 Sattelzug OVP Weihnachten 2000 / Nostalgie", "sku": "", "price": 2.1, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010403417", "title": "Brauerei Schinner Bayreuth MAN HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010414901", "title": "Brauerei Kulmbacher Kapuziner Weisse HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 1.7, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010420727", "title": "Brauerei Sternquell Vogtland HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.1, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010430181", "title": "Brauerei Weismainer Püls-Bräu HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010441925", "title": "Markgrafen Getränke Motzel HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.49, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010454826", "title": "Brauerei Falkensteiner mit Schankhänger HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.29, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010460938", "title": "Brauerei Kulmbacher FC Bayern Edition HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 4.5, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010464388", "title": "Brauerei Kulmbach Kapuziner Weisse HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010474060", "title": "DEIT Limonade Softdrink HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.2, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168010481132", "title": "Bad Brambacher Mineralwasser Apfel HZ 1:87 Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 2.3, "condition": "Neu", "category": "Nichtalkoholische Getränke", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168010489082", "title": "Leikeim Bier mit Weihnachtsbaum / Weihnachten / Neu+OVP Mini Truck / Werbetruck", "sku": "", "price": 3.99, "condition": "Neu", "category": "Bier & Spirituosen", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168033707684", "title": "Franz Beckenbauer Panini World Cup 1974 Sticker #63 Sonric’s -Vintage, ungeklebt", "sku": "", "price": 18.0, "condition": "Gebraucht", "category": "Einzelsticker", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168033709108", "title": "Gerd Müller Panini World Cup 1974 Sticker #73 – Sonric’s - Vintage, ungeklebt!", "sku": "", "price": 14.0, "condition": "Gebraucht", "category": "Einzelsticker", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168033710272", "title": "Diego Maradona Panini World Cup 1990 Sticker #224 –Sonric’s -Vintage,ungeklebt!", "sku": "", "price": 21.0, "condition": "Gebraucht", "category": "Einzelsticker", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168033897406", "title": "Paolo Rossi Panini World Cup 1982 Sticker #141 – Sonric’s - Vintage, ungeklebt!", "sku": "", "price": 10.99, "condition": "Gebraucht", "category": "Einzelsticker", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168034324022", "title": "Lustiges Taschenbuch Spezial Nr. 46 Landlust Ferien auf dem Bauernhof! Gebraucht", "sku": "", "price": 3.14, "condition": "Gut", "category": "Comics & Graphic Novels", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168034373923", "title": "Xindi Kreuzer Modell Eaglemoss  #65 Star Trek OVP", "sku": "", "price": 12.0, "condition": "Gebraucht", "category": "Fahrzeuge & Raumschiffe", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168236328428", "title": "Fear of the Walking Dead - Die komplette erste Staffel - Staffel 1 - Blu-Ray", "sku": "A-4-B2", "price": 12.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4013549072014"}, {"id": "168236329641", "title": "Underworld Trilogie (Underworld 1 + 2 + 3) | DVD FSK 16/ 18 Box", "sku": "A-4-B2", "price": 14.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4030521729285"}, {"id": "168236330775", "title": "The Walking Dead - Die komplette erste Staffel - Special Uncut Blu-ray", "sku": "A-4-B2", "price": 6.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 1, "soldQty": 0, "ean": ""}, {"id": "168236331767", "title": "OUTSIDE THE LAW mit Cynthia Rothrock Original deutsche DVD FSK18", "sku": "A-4-B2", "price": 15.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4030521700468"}, {"id": "168236334076", "title": "Dawn of the Dead Blu-ray FSK 18 gebraucht gut – Zombie Romero Uncut Deutsch Kult", "sku": "A-4-B2", "price": 12.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "5050582796810"}, {"id": "168236334883", "title": "Kung Fu - Rückkehr der Legende (Dvd) (David Carradine) - FSK 18 -", "sku": "A-4-B2", "price": 14.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "7321924126373"}, {"id": "168236336959", "title": "Dobermann DVD gebraucht gut – Vincent Cassel Monica Bellucci Kult", "sku": "A-4-B2", "price": 9.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": ""}, {"id": "168236337559", "title": "Diamond Dogs (Uncut Edition) von Dolph Lundgren | DVD | Zustand gut", "sku": "A-4-B2", "price": 9.49, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4020628982720"}, {"id": "168236345336", "title": "Chucky die Mörderpuppe - DVD -  FSK 18 Gebraucht", "sku": "A-4-B2", "price": 14.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4010232006196"}, {"id": "168236348894", "title": "True Romance -  DVD - FSK 18 -  UNCUT  - Ungeschnittene Version", "sku": "A-4-B2", "price": 9.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 1, "soldQty": 0, "ean": "4012050404482"}, {"id": "168236353283", "title": "Tokyo Gore Police von Yoshihiro Nishimura | DVD | Zustand gut", "sku": "A-4-B2", "price": 13.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 0, "soldQty": 0, "ean": "4260034632318"}, {"id": "168236356003", "title": "Stephen King´s  Trucks   DVD UNCUT FSK18 Deutsch Rar U Turn U Die", "sku": "A-4-B2", "price": 8.99, "condition": "Gut", "category": "DVDs & Blu-rays", "watchers": 1, "soldQty": 0, "ean": "4008670221745"}];
 
-// ===== DATA =====
-function loadData() {
-  try { const s = localStorage.getItem('nerdy_v2'); if (s) items = JSON.parse(s); } catch(e) {}
-  updateStats(); renderCurrentTab();
-}
-function saveData() {
-  try { localStorage.setItem('nerdy_v2', JSON.stringify(items)); } catch(e) {}
-}
-function showToast(m) {
-  document.querySelectorAll('.toast').forEach(t=>t.remove());
-  const t = document.createElement('div'); t.className='toast'; t.textContent=m;
-  document.body.appendChild(t); setTimeout(()=>t.remove(),2300);
-}
-function showStatus(m, type) {
-  const el = document.getElementById('scanStatus'); el.textContent=m; el.className='scan-status '+type;
-  if (type!=='loading') setTimeout(()=>{el.className='scan-status'},4000);
+let scanner=null,isScanning=false,lastScanTime=0,currentTab='boxes';
+
+function showToast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2300)}
+function showStatus(m,type){const el=document.getElementById('scanStatus');el.textContent=m;el.className='scan-status '+type;setTimeout(()=>{el.className='scan-status'},4000)}
+
+function updateStats(){
+  document.getElementById('statTotal').textContent=items.length;
+  const totalVal=items.reduce((s,i)=>s+i.price,0);
+  document.getElementById('statValue').textContent=totalVal.toFixed(2)+'€';
+  const boxes=new Set(items.filter(i=>i.sku).map(i=>i.sku));
+  document.getElementById('statBoxes').textContent=boxes.size;
+  const un=items.filter(i=>!i.sku).length;
+  document.getElementById('statUnassigned').textContent=un;
+  document.getElementById('badgeUn').textContent=un;
+  document.getElementById('updateInfo').textContent='Datenstand: '+new Date().toLocaleDateString('de-DE')+' · '+items.length+' Artikel geladen';
 }
 
-// ===== CSV IMPORT =====
-function importCSV(input) {
-  const file = input.files[0]; if (!file) return;
-  showStatus('📂 CSV wird importiert...','loading');
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const text = e.target.result.replace(/^\uFEFF/,'');
-      const lines = text.split('\n');
-      const headers = lines[0].split(';').map(h => h.replace(/"/g,'').trim());
-
-      const colIdx = {};
-      ['Item number','Title','Custom label (SKU)','Current price','Condition',
-       'eBay category 1 name','Available quantity','Start date','Watchers','Sold quantity','P:EAN'].forEach(col => {
-        colIdx[col] = headers.indexOf(col);
-      });
-
-      const newItems = [];
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim(); if (!line) continue;
-        // Parse CSV with semicolon, handling quoted fields
-        const vals = [];
-        let current = '', inQuotes = false;
-        for (let c = 0; c < line.length; c++) {
-          if (line[c] === '"') { inQuotes = !inQuotes; }
-          else if (line[c] === ';' && !inQuotes) { vals.push(current.trim()); current = ''; }
-          else { current += line[c]; }
-        }
-        vals.push(current.trim());
-
-        const get = (col) => (colIdx[col] >= 0 && colIdx[col] < vals.length) ? vals[colIdx[col]] : '';
-        const sku = get('Custom label (SKU)');
-        const title = get('Title');
-        const price = parseFloat(get('Current price').replace(',','.')) || 0;
-        const itemNum = get('Item number');
-
-        if (!title && !itemNum) continue;
-
-        newItems.push({
-          id: itemNum || Date.now() + '_' + i,
-          title: title,
-          sku: sku,
-          price: price,
-          condition: get('Condition'),
-          category: get('eBay category 1 name'),
-          quantity: parseInt(get('Available quantity')) || 1,
-          watchers: parseInt(get('Watchers')) || 0,
-          soldQty: parseInt(get('Sold quantity')) || 0,
-          startDate: get('Start date'),
-          ean: get('P:EAN')
-        });
-      }
-
-      items = newItems;
-      saveData();
-      updateStats();
-      renderCurrentTab();
-      showToast('✅ ' + items.length + ' Artikel importiert!');
-      showStatus('✅ ' + items.length + ' Artikel aus eBay importiert!','success');
-    } catch(err) {
-      showStatus('❌ Fehler beim Import: ' + err.message,'error');
-    }
-  };
-  reader.readAsText(file, 'utf-8');
-  input.value = '';
+// === QR SCANNER ===
+async function startScan(){
+  if(isScanning)await stopScan();
+  const c=document.getElementById('scannerContainer');c.classList.add('active');isScanning=true;
+  scanner=new Html5Qrcode("reader");
+  try{await scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:220,height:220},formatsToSupport:[Html5QrcodeSupportedFormats.QR_CODE],experimentalFeatures:{useBarCodeDetectorIfSupported:true}},onScan,()=>{})}
+  catch(e){c.classList.remove('active');isScanning=false;showStatus('❌ Kamera geht nicht','error')}
 }
+async function stopScan(){if(scanner){try{await scanner.stop()}catch(e){}scanner=null}document.getElementById('scannerContainer').classList.remove('active');isScanning=false}
+async function onScan(text){const now=Date.now();if(now-lastScanTime<2000)return;lastScanTime=now;if(navigator.vibrate)navigator.vibrate(150);await stopScan();if(/^[A-D]-[1-5]-B[1-6]$/.test(text)){showBoxDetail(text);showToast('📦 Box '+text)}else{showStatus('"'+text+'" ist kein gültiger Box-Code','error')}}
+function manualBox(){const code=prompt('Box-Code eingeben (z.B. A-1-B1):');if(!code)return;const c=code.trim().toUpperCase();if(/^[A-D]-[1-5]-B[1-6]$/.test(c)){showBoxDetail(c);showToast('📦 Box '+c)}else showStatus('Ungültiger Box-Code','error')}
 
-// ===== STATS =====
-function updateStats() {
-  document.getElementById('statTotal').textContent = items.length;
-  const totalVal = items.reduce((s,i) => s + i.price, 0);
-  document.getElementById('statValue').textContent = totalVal.toFixed(2) + '€';
-  const boxes = new Set(items.filter(i=>i.sku).map(i=>i.sku));
-  document.getElementById('statBoxes').textContent = boxes.size;
-  const unassigned = items.filter(i=>!i.sku).length;
-  document.getElementById('statUnassigned').textContent = unassigned;
-  document.getElementById('badgeUn').textContent = unassigned;
-}
-
-// ===== QR SCANNER =====
-async function startScan() {
-  if (isScanning) await stopScan();
-  if (items.length === 0) { showStatus('Bitte zuerst eine CSV importieren!','error'); return; }
-  const container = document.getElementById('scannerContainer');
-  container.classList.add('active');
-  isScanning = true;
-  scanner = new Html5Qrcode("reader");
-  try {
-    await scanner.start({facingMode:"environment"},{
-      fps:10,qrbox:{width:220,height:220},
-      formatsToSupport:[Html5QrcodeSupportedFormats.QR_CODE],
-      experimentalFeatures:{useBarCodeDetectorIfSupported:true}
-    }, onScan, ()=>{});
-  } catch(err) {
-    container.classList.remove('active'); isScanning=false;
-    showStatus('❌ Kamera geht nicht.','error');
-  }
-}
-async function stopScan() {
-  if(scanner){try{await scanner.stop()}catch(e){}scanner=null}
-  document.getElementById('scannerContainer').classList.remove('active');
-  isScanning=false;
-}
-async function onScan(text) {
-  const now=Date.now();if(now-lastScanTime<2000)return;lastScanTime=now;
-  if(navigator.vibrate)navigator.vibrate(150);
-  await stopScan();
-  if(/^[A-D]-[1-5]-B[1-6]$/.test(text)) {
-    showBoxDetail(text);
-    showToast('📦 Box '+text+' gescannt');
-  } else {
-    showStatus('"'+text+'" ist kein gültiger Box-Code','error');
-  }
-}
-
-// ===== BOX DETAIL =====
-function showBoxDetail(sku) {
-  const boxItems = items.filter(i => i.sku === sku);
-  const detail = document.getElementById('boxDetail');
-  const parts = sku.split('-');
-
-  document.getElementById('bdCode').textContent = sku;
-  document.getElementById('bdInfo').textContent = 'Regal '+parts[0]+' | Ebene '+parts[1]+' | Box '+parts[2];
-
-  const totalVal = boxItems.reduce((s,i)=>s+i.price, 0);
-  const avgVal = boxItems.length ? totalVal / boxItems.length : 0;
-  const totalWatchers = boxItems.reduce((s,i)=>s+i.watchers, 0);
-
-  document.getElementById('bdStats').innerHTML =
-    '<div class="box-stat"><div class="num">'+boxItems.length+'</div><div class="lbl">Artikel</div></div>' +
-    '<div class="box-stat"><div class="num" style="color:#4ade80">'+totalVal.toFixed(2)+'€</div><div class="lbl">Gesamtwert</div></div>' +
-    '<div class="box-stat"><div class="num">'+avgVal.toFixed(2)+'€</div><div class="lbl">Ø Preis</div></div>' +
-    '<div class="box-stat"><div class="num">'+totalWatchers+'</div><div class="lbl">Beobachter</div></div>';
-
-  if (boxItems.length === 0) {
-    document.getElementById('bdItems').innerHTML = '<div class="empty-state"><div class="icon">📦</div><div class="msg">Diese Box ist leer.<br>Keine Artikel mit SKU "'+sku+'" gefunden.</div></div>';
-  } else {
-    // Sort by price descending
-    const sorted = [...boxItems].sort((a,b)=>b.price-a.price);
-    document.getElementById('bdItems').innerHTML = sorted.map(item =>
-      '<div class="box-item">' +
-        '<div class="item-info">' +
-          '<div class="item-title">'+item.title+'</div>' +
-          '<div class="item-meta">'+item.condition+' · #'+item.id+(item.watchers?' · 👁 '+item.watchers:'')+'</div>' +
-          '<div class="item-cat">'+item.category+'</div>' +
-        '</div>' +
-        '<div class="item-price">'+item.price.toFixed(2)+'€</div>' +
-      '</div>'
+// === BOX DETAIL ===
+function showBoxDetail(sku){
+  const bi=items.filter(i=>i.sku===sku);
+  const parts=sku.split('-');
+  document.getElementById('bdCode').textContent=sku;
+  document.getElementById('bdInfo').textContent='Regal '+parts[0]+' | Ebene '+parts[1]+' | Box '+parts[2];
+  const totalVal=bi.reduce((s,i)=>s+i.price,0);
+  const avgVal=bi.length?totalVal/bi.length:0;
+  const watchers=bi.reduce((s,i)=>s+i.watchers,0);
+  document.getElementById('bdStats').innerHTML=
+    '<div class="box-stat"><div class="num">'+bi.length+'</div><div class="lbl">Artikel</div></div>'+
+    '<div class="box-stat"><div class="num" style="color:#4ade80">'+totalVal.toFixed(2)+'€</div><div class="lbl">Gesamtwert</div></div>'+
+    '<div class="box-stat"><div class="num">'+avgVal.toFixed(2)+'€</div><div class="lbl">Ø Preis</div></div>'+
+    '<div class="box-stat"><div class="num">'+watchers+'</div><div class="lbl">Beobachter</div></div>';
+  if(!bi.length){
+    document.getElementById('bdItems').innerHTML='<div class="empty-state"><div class="icon">📦</div><div class="msg">Box ist leer.<br>Keine Artikel mit SKU "'+sku+'" gefunden.</div></div>';
+  }else{
+    const sorted=[...bi].sort((a,b)=>b.price-a.price);
+    document.getElementById('bdItems').innerHTML=sorted.map(item=>
+      '<div class="box-item"><div class="item-info">'+
+      '<div class="item-title">'+item.title+'</div>'+
+      '<div class="item-meta">'+item.condition+(item.watchers?' · 👁 '+item.watchers:'')+' · #'+item.id+'</div>'+
+      '<div class="item-cat">'+item.category+'</div>'+
+      '</div><div class="item-price">'+item.price.toFixed(2)+'€</div></div>'
     ).join('');
   }
-  detail.classList.add('active');
-  detail.scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('boxDetail').classList.add('active');
+  document.getElementById('boxDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function closeBox() {
-  document.getElementById('boxDetail').classList.remove('active');
-}
+function closeBox(){document.getElementById('boxDetail').classList.remove('active')}
 
-// ===== TABS =====
-function showTab(tab) {
-  currentTab = tab;
-  document.getElementById('tabBoxes').className = 'tab' + (tab==='boxes'?' active':'');
-  document.getElementById('tabUnassigned').className = 'tab' + (tab==='unassigned'?' active':'');
-  document.getElementById('tabAll').className = 'tab' + (tab==='all'?' active':'');
+// === TABS ===
+function showTab(tab){
+  currentTab=tab;
+  ['tabBoxes','tabUnassigned','tabAll'].forEach(id=>{document.getElementById(id).className='tab'});
+  document.getElementById({boxes:'tabBoxes',unassigned:'tabUnassigned',all:'tabAll'}[tab]).className='tab active';
   renderCurrentTab();
 }
+function renderCurrentTab(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const container=document.getElementById('tabContent');
 
-function renderCurrentTab() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const container = document.getElementById('tabContent');
-
-  if (currentTab === 'boxes') {
-    // Group by SKU
-    const boxMap = {};
-    items.filter(i=>i.sku).forEach(item => {
-      if (!boxMap[item.sku]) boxMap[item.sku] = [];
-      boxMap[item.sku].push(item);
-    });
-    const boxKeys = Object.keys(boxMap).sort();
-    const filtered = search
-      ? boxKeys.filter(k => k.toLowerCase().includes(search) || boxMap[k].some(i=>i.title.toLowerCase().includes(search)))
-      : boxKeys;
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">📦</div><div class="msg">'+(items.length?'Keine Boxen mit zugewiesenen Artikeln.':'Importiere eine eBay CSV um zu starten.')+'</div></div>';
-      return;
-    }
-    container.innerHTML = filtered.map(sku => {
-      const bi = boxMap[sku];
-      const val = bi.reduce((s,i)=>s+i.price,0);
-      const parts = sku.split('-');
-      const info = /^[A-D]-[1-5]-B[1-6]$/.test(sku) ? 'Regal '+parts[0]+' · Ebene '+parts[1]+' · Box '+parts[2] : '';
-      return '<div class="list-item" onclick="showBoxDetail(\''+sku+'\')" style="cursor:pointer">' +
-        '<div style="flex:1;min-width:0">' +
-          '<div style="font-size:16px;font-weight:800;color:#60a5fa">'+sku+'</div>' +
-          '<div style="font-size:11px;color:#64748b;margin-top:2px">'+bi.length+' Artikel · '+info+'</div>' +
-        '</div>' +
-        '<div style="text-align:right">' +
-          '<div style="font-size:15px;font-weight:700;color:#4ade80">'+val.toFixed(2)+'€</div>' +
-        '</div></div>';
+  if(currentTab==='boxes'){
+    const boxMap={};
+    items.filter(i=>i.sku).forEach(item=>{if(!boxMap[item.sku])boxMap[item.sku]=[];boxMap[item.sku].push(item)});
+    let boxKeys=Object.keys(boxMap).sort();
+    if(search)boxKeys=boxKeys.filter(k=>k.toLowerCase().includes(search)||boxMap[k].some(i=>i.title.toLowerCase().includes(search)));
+    if(!boxKeys.length){container.innerHTML='<div class="empty-state"><div class="icon">📦</div><div class="msg">Keine Boxen gefunden.</div></div>';return}
+    container.innerHTML=boxKeys.map(sku=>{
+      const bi=boxMap[sku];const val=bi.reduce((s,i)=>s+i.price,0);
+      const parts=sku.split('-');
+      const info=/^[A-D]-[1-5]-B[1-6]$/.test(sku)?'Regal '+parts[0]+' · Ebene '+parts[1]+' · Box '+parts[2]:'';
+      return'<div class="list-item" onclick="showBoxDetail(\''+sku+'\')">'+
+        '<div class="li-info"><div style="font-size:16px;font-weight:800;color:#60a5fa">'+sku+'</div>'+
+        '<div class="li-meta">'+bi.length+' Artikel · '+info+'</div></div>'+
+        '<div class="li-right"><div class="li-price">'+val.toFixed(2)+'€</div></div></div>';
     }).join('');
 
-  } else if (currentTab === 'unassigned') {
-    const unassigned = items.filter(i=>!i.sku);
-    const filtered = search ? unassigned.filter(i=>i.title.toLowerCase().includes(search)||i.id.toString().includes(search)) : unassigned;
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">✅</div><div class="msg">'+(unassigned.length===0?'Alle Artikel sind Boxen zugewiesen!':'Keine Treffer.')+'</div></div>';
-      return;
-    }
-    container.innerHTML = filtered.map(item =>
-      '<div class="list-item"><div class="li-title">'+item.title+'</div><div class="li-price">'+item.price.toFixed(2)+'€</div></div>'
+  }else if(currentTab==='unassigned'){
+    let un=items.filter(i=>!i.sku);
+    if(search)un=un.filter(i=>i.title.toLowerCase().includes(search)||i.category.toLowerCase().includes(search));
+    if(!un.length){container.innerHTML='<div class="empty-state"><div class="icon">✅</div><div class="msg">'+(items.filter(i=>!i.sku).length===0?'Alle Artikel haben einen Stellplatz!':'Keine Treffer.')+'</div></div>';return}
+    container.innerHTML=un.map(item=>
+      '<div class="list-item"><div class="li-info"><div class="li-title">'+item.title+'</div>'+
+      '<div class="li-meta">'+item.condition+' · '+item.category+' · #'+item.id+'</div></div>'+
+      '<div class="li-right"><div class="li-price">'+item.price.toFixed(2)+'€</div></div></div>'
     ).join('');
 
-  } else {
-    // All items
-    const filtered = search ? items.filter(i=>i.title.toLowerCase().includes(search)||i.sku.toLowerCase().includes(search)||(i.id+'').includes(search)) : items;
-    if (filtered.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div class="msg">Keine Artikel gefunden.</div></div>';
-      return;
-    }
-    container.innerHTML = filtered.map(item =>
-      '<div class="list-item">' +
-        '<div style="flex:1;min-width:0">' +
-          '<div class="li-title">'+item.title+'</div>' +
-          '<div style="font-size:11px;color:#64748b;margin-top:2px">'+(item.sku?'<span class="li-sku">'+item.sku+'</span> · ':'')+item.condition+' · '+item.category+'</div>' +
-        '</div>' +
-        '<div class="li-price">'+item.price.toFixed(2)+'€</div>' +
-      '</div>'
+  }else{
+    let all=[...items];
+    if(search)all=all.filter(i=>i.title.toLowerCase().includes(search)||(i.sku||'').toLowerCase().includes(search)||i.category.toLowerCase().includes(search));
+    if(!all.length){container.innerHTML='<div class="empty-state"><div class="icon">📋</div><div class="msg">Keine Artikel gefunden.</div></div>';return}
+    container.innerHTML=all.map(item=>
+      '<div class="list-item"><div class="li-info"><div class="li-title">'+item.title+'</div>'+
+      '<div class="li-meta">'+(item.sku?'<span class="li-sku">'+item.sku+'</span> · ':'')+item.condition+' · '+item.category+'</div></div>'+
+      '<div class="li-right"><div class="li-price">'+item.price.toFixed(2)+'€</div></div></div>'
     ).join('');
   }
 }
 
-// ===== EXPORT =====
-function exportData() {
-  if (!items.length) { showStatus('Keine Daten','error'); return; }
-  const h = 'Lagerplatz;Titel;eBay-Nr;Preis;Zustand;Kategorie;Beobachter;EAN';
-  const r = items.map(i=>
-    (i.sku||'KEIN STELLPLATZ')+';'+(i.title||'')+';'+i.id+';'+i.price.toFixed(2)+';'+(i.condition||'')+';'+(i.category||'')+';'+i.watchers+';'+(i.ean||'')
-  );
-  const csv = '\uFEFF'+h+'\n'+r.join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
-  a.download='Lager_Export_'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  showToast('📥 '+items.length+' Artikel exportiert');
-}
-
-function clearAll() {
-  if (confirm('Wirklich ALLE importierten Daten löschen?')) {
-    items=[]; saveData(); updateStats(); renderCurrentTab(); closeBox();
-    showToast('🗑️ Gelöscht');
-  }
-}
-
-loadData();
+updateStats();
+renderCurrentTab();
 </script>
 </body>
 </html>
