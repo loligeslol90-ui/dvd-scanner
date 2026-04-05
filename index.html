@@ -19,7 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .header{background:linear-gradient(135deg,#1e3a5f,#1e40af);padding:14px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.3);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:12px}
 .header-logo{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,0.3)}
 .header-text{text-align:left}.header h1{font-size:19px;font-weight:700}.header .subtitle{font-size:11px;color:#93c5fd;margin-top:2px}
-.ov-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin:12px}
+.ov-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:12px}
 .ov-card{background:#1e293b;border-radius:8px;padding:12px 8px;text-align:center;border:1px solid #334155}
 .ov-card .num{font-size:18px;font-weight:800}.ov-card .lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
 .green{color:#4ade80}.blue{color:#60a5fa}.yellow{color:#fbbf24}.red{color:#f87171}.white{color:#e2e8f0}
@@ -180,9 +180,7 @@ function renderOverview(){
     '<div class="ov-card"><div class="num white">'+avg.toFixed(2)+'€</div><div class="lbl">Ø Preis</div></div>'+
     '<div class="ov-card"><div class="num yellow">'+w+'</div><div class="lbl">Beobachter</div></div>'+
     '<div class="ov-card"><div class="num blue">'+boxes+'</div><div class="lbl">Boxen</div></div>'+
-    '<div class="ov-card"><div class="num blue">'+orders.length+'</div><div class="lbl">Verkäufe</div></div>'+
-    '<div class="ov-card"><div class="num'+(totalFree<=5?' yellow':' green')+'">'+totalFree+'</div><div class="lbl">Slots frei</div></div>'+
-    '<div class="ov-card"><div class="num white">'+totalSlots+'/'+(boxes*BOX_CAP)+'</div><div class="lbl">Belegt</div></div>';
+    '<div class="ov-card"><div class="num blue">'+orders.length+'</div><div class="lbl">Verkäufe</div></div>';
 }
 
 function showPage(page){
@@ -205,7 +203,7 @@ function showBoxDetail(sku){
   const tv=bi.reduce((s,i)=>s+i.price*(i.qty||1),0);const avg=bi.length?tv/bi.length:0;const w=bi.reduce((s,i)=>s+i.watchers,0);
   document.getElementById('bdStats').innerHTML='<div class="box-stat"><div class="num">'+bi.length+'</div><div class="lbl">Artikel</div></div><div class="box-stat"><div class="num green">'+tv.toFixed(2)+'€</div><div class="lbl">Wert</div></div><div class="box-stat"><div class="num">'+avg.toFixed(2)+'€</div><div class="lbl">Ø Preis</div></div><div class="box-stat"><div class="num">'+w+'</div><div class="lbl">Beobachter</div></div>';
   const bdCap=document.getElementById('bdCap');
-  if(!isBundel(sku)){const cp=boxCapacity(bi);bdCap.innerHTML='<span class="cap-lbl" style="color:#94a3b8">Slots</span><div class="cap-track"><div class="cap-fill" style="width:'+cp.pct+'%;background:'+cp.color+'"></div></div><span class="cap-lbl" style="color:'+cp.color+'">'+cp.used+'/'+BOX_CAP+(cp.over?' · ⚠️ voll':' · '+cp.free+' frei')+'</span>';bdCap.style.display='flex'}else{bdCap.style.display='none'}
+  if(!isBundel(sku)&&boxCapacity(bi).free>0){const cp=boxCapacity(bi);bdCap.innerHTML='<span class="cap-lbl" style="color:#94a3b8">Slots</span><div class="cap-track"><div class="cap-fill" style="width:'+cp.pct+'%;background:'+cp.color+'"></div></div><span class="cap-lbl" style="color:'+cp.color+'">'+cp.used+'/'+BOX_CAP+(cp.over?' · ⚠️ voll':' · '+cp.free+' frei')+'</span>';bdCap.style.display='flex'}else{bdCap.style.display='none'}
   if(!bi.length){document.getElementById('bdItems').innerHTML='<div class="empty"><div class="icon">📦</div>Box leer</div>'}
   else{document.getElementById('bdItems').innerHTML=[...bi].sort((a,b)=>b.price-a.price).map(i=>
     '<a class="bx-item" href="'+ebayUrl(i.id)+'" target="_blank" rel="noopener"><div class="ii"><div class="it">'+i.title+'<span class="ebay-icon">↗</span></div><div class="im">'+i.condition+(i.slots>1?' · 📦'+i.slots+'x':'')+(i.watchers?' · 👁 '+i.watchers:'')+' · '+i.daysListed+'T · #'+i.id+'</div><div class="ic">'+i.category+'</div></div><div class="ip">'+i.price.toFixed(2)+'€</div></a>'
@@ -238,7 +236,7 @@ function renderLager(){
       const p=sku.split('-');const isStd=/^[A-D]-[1-5]-B[1-6]$/.test(sku);
       const info=isStd?'Regal '+p[0]+' · Ebene '+p[1]+' · Box '+p[2]:sku;
       const isBdl=isBundel(sku);
-      const capTxt=isBdl?'':'<span class="slot-badge '+boxCapacity(bi).cls+'">'+boxCapacity(bi).used+'/'+BOX_CAP+' · '+(boxCapacity(bi).over?'⚠️ voll':boxCapacity(bi).free+' frei')+'</span>';
+      const cp=boxCapacity(bi);const capTxt=(isBdl||cp.free<=0)?'':'<span class="slot-badge '+cp.cls+'">'+cp.free+' frei</span>';
       return'<div class="li" onclick="showBoxDetail(\''+sku+'\')"><div class="li-i"><div style="font-size:16px;font-weight:800;color:#60a5fa">'+sku+'</div><div class="li-m">'+bi.length+' Artikel · '+info+capTxt+'</div></div><div class="li-r"><div class="li-p">'+v.toFixed(2)+'€</div></div></div>'}).join('');
   }else if(lagerTab==='action'){
     let a=items.filter(i=>i.daysListed>=ACTION_DAYS);
