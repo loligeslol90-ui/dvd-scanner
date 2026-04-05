@@ -112,7 +112,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <button class="scan-pill" onclick="startScan()">📦 Scan</button>
     <button class="sub-tab active" onclick="showLagerTab('boxes')">Boxen</button>
     <button class="sub-tab" onclick="showLagerTab('all')">Alle</button>
-    <button class="sub-tab" onclick="showLagerTab('action')">⏰ Handeln <span class="badge badge-warn" id="badgeAction">0</span></button>
+    <button class="sub-tab" onclick="showLagerTab('action')">⏰ Handeln <span id="badgeAction" style="opacity:0.6">0</span></button>
   </div>
   <div class="search-row">
     <input class="search-input" id="lagerSearch" placeholder="🔍 Suche..." oninput="renderLager()">
@@ -162,6 +162,7 @@ function renderOverview(){
 }
 
 function showPage(page){
+  closeBox();
   document.querySelectorAll('.nav-tab').forEach((t,i)=>{t.className='nav-tab'+(i===['lager','sales'].indexOf(page)?' active':'')});
   document.querySelectorAll('.page').forEach(p=>p.className='page');
   document.getElementById({lager:'pageLager',sales:'pageSales'}[page]).className='page active';
