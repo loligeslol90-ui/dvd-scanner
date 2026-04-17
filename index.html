@@ -284,7 +284,8 @@ function renderSales(){
       '<div class="ov-item"><span class="ov-label">Ø pro Verkauf</span><span class="ov-val white">'+avgPerSale.toFixed(2)+'€</span></div>'+
       
       '<div class="ov-item"><span class="ov-label">Einmalkäufer</span><span class="ov-val white">'+singleBuyers.length+'</span></div>'+
-      '<div class="ov-item"><span class="ov-label">Stammkunden (2+ Käufe)</span><span class="ov-val green">'+repeatBuyers.length+'</span></div></div>';
+      '<div class="ov-item"><span class="ov-label">Stammkunden (2+ Käufe)</span><span class="ov-val green">'+repeatBuyers.length+'</span></div></div>'+
+    '<div style="margin-top:8px;border-top:1px solid #334155;padding-top:8px"><a href="map.html" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:6px;background:#172554;border:1px solid #1e40af;text-decoration:none;color:#93c5fd;font-size:12px;font-weight:600">🗺 Kundenlandkarte öffnen</a></div>';
   }
   if(salesFilter==='repeat'){summary+='<div style="margin-top:8px;border-top:1px solid #334155;padding-top:8px">';repeatBuyers.sort((a,b)=>buyerStats[b].count-buyerStats[a].count).forEach(b=>{summary+='<div class="ov-item"><span class="ov-label">👤 '+b+' ('+buyerStats[b].count+'x)</span><span class="ov-val green">'+buyerStats[b].total.toFixed(2)+'€</span></div>'});summary+='</div>'}
   summary+='</div>';
