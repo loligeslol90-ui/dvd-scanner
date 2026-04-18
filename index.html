@@ -165,8 +165,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="page" id="pageCheck">
   <div class="card" style="margin-top:12px"><div class="card-title">🔍 Markt-Check</div><div class="qc-input-row" style="margin:0"><input class="qc-input" id="qcInput" placeholder="" autocomplete="off"><button class="qc-go" id="qcGoBtn" onclick="runCheck()">🔍</button></div></div>
   <div id="qcLoading" style="display:none;text-align:center;padding:20px;color:#64748b;font-size:13px">⏳ Lade Marktdaten...</div>
-  <div id="qcLiveResults" style="display:none"></div>
-  <div class="qc-results" id="qcResults" style="display:none"><a class="qc-btn qc-btn-sold" id="qcSold" href="#" target="_blank" rel="noopener"><span class="qc-btn-icon">🔴</span><span class="qc-btn-text"><span class="qc-btn-title">Verkaufte Artikel auf eBay ansehen</span><span class="qc-btn-desc">Letzte 90 Tage öffnen</span></span><span class="qc-btn-arrow">→</span></a></div>
+  <div id="qcStatsArea" style="display:none"></div>
+  <div id="qcSections" style="display:none">
+    <div class="card" style="cursor:pointer;margin-bottom:0" onclick="toggleSection('active')"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700;color:#4ade80">🟢 Aktive Angebote <span id="qcActiveCount"></span></span><span id="qcActiveArrow" style="color:#64748b;font-size:16px">▼</span></div></div>
+    <div id="qcActiveItems" style="display:none"></div>
+    <a class="qc-btn qc-btn-sold" id="qcSold" href="#" target="_blank" rel="noopener" style="margin:8px 12px;width:calc(100% - 24px)"><span class="qc-btn-icon">🔴</span><span class="qc-btn-text"><span class="qc-btn-title">Verkaufte Artikel auf eBay ansehen</span><span class="qc-btn-desc">Letzte 90 Tage öffnen</span></span><span class="qc-btn-arrow">→</span></a>
+  </div>
   <div class="card"><div class="card-title">🕒 Letzte Suchen</div><div id="qcHistory" style="margin:0"></div></div>
 </div>
 </div>
@@ -315,39 +319,51 @@ function renderSales(){
 // === QUICK CHECK (LIVE API) ===
 const WORKER_URL='https://nerdy-ebay-api.loligeslol90.workers.dev';
 let checkHistory=[];try{const h=localStorage.getItem('qc_history');if(h)checkHistory=JSON.parse(h)}catch(e){}
-let isChecking=false;
+let isChecking=false,activeExpanded=false;
+
+function toggleSection(s){
+  if(s==='active'){activeExpanded=!activeExpanded;document.getElementById('qcActiveItems').style.display=activeExpanded?'block':'none';document.getElementById('qcActiveArrow').textContent=activeExpanded?'▲':'▼'}
+}
 
 async function runCheck(keyword){
   const q=keyword||document.getElementById('qcInput').value.trim();
   if(!q||isChecking)return;
   document.getElementById('qcInput').value=q;
-  isChecking=true;
+  isChecking=true;activeExpanded=false;
   checkHistory=checkHistory.filter(h=>h!==q);checkHistory.unshift(q);
   if(checkHistory.length>10)checkHistory=checkHistory.slice(0,10);
   try{localStorage.setItem('qc_history',JSON.stringify(checkHistory))}catch(e){}
   renderCheckHistory();
   const enc=encodeURIComponent(q);
   document.getElementById('qcSold').href='https://www.ebay.de/sch/i.html?_nkw='+enc+'&LH_Sold=1&LH_Complete=1&_sop=13&rt=nc';
-  document.getElementById('qcResults').style.display='block';
   document.getElementById('qcLoading').style.display='block';
-  document.getElementById('qcLiveResults').style.display='none';
+  document.getElementById('qcStatsArea').style.display='none';
+  document.getElementById('qcSections').style.display='none';
   document.getElementById('qcGoBtn').textContent='⏳';
   try{
     const resp=await fetch(WORKER_URL+'?q='+enc+'&type=active');
     const data=await resp.json();
-    let h='';
     if(data.stats&&data.stats.total>0){
-      h+='<div class="qc-stats"><div class="qc-stat"><div class="qn blue">'+data.stats.total+'</div><div class="ql">Aktive Angebote</div></div><div class="qc-stat"><div class="qn green">'+data.stats.avgPrice.toFixed(2)+'€</div><div class="ql">Ø Preis</div></div><div class="qc-stat"><div class="qn white">'+data.stats.minPrice.toFixed(2)+'€</div><div class="ql">Günstigster</div></div><div class="qc-stat"><div class="qn white">'+data.stats.maxPrice.toFixed(2)+'€</div><div class="ql">Teuerster</div></div></div>';
+      document.getElementById('qcStatsArea').innerHTML='<div class="qc-stats"><div class="qc-stat"><div class="qn blue">'+data.stats.total+'</div><div class="ql">Aktive Angebote</div></div><div class="qc-stat"><div class="qn green">'+data.stats.avgPrice.toFixed(2)+'€</div><div class="ql">Ø Gesamtpreis</div></div><div class="qc-stat"><div class="qn white">'+data.stats.minPrice.toFixed(2)+'€</div><div class="ql">Günstigster</div></div><div class="qc-stat"><div class="qn white">'+data.stats.maxPrice.toFixed(2)+'€</div><div class="ql">Teuerster</div></div></div>';
+      document.getElementById('qcStatsArea').style.display='block';
+      document.getElementById('qcActiveCount').textContent='('+data.items.length+'/'+data.stats.total+')';
       if(data.items&&data.items.length){
-        h+='<div class="card" style="padding:8px"><div class="card-title" style="margin:6px 6px 8px">🟢 Top '+data.items.length+' Angebote</div></div>';
-        h+=data.items.map(function(item){return'<a class="qc-item" href="'+item.url+'" target="_blank" rel="noopener">'+(item.img?'<img src="'+item.img+'" alt="">':'')+'<div class="qi-info"><div class="qi-title">'+item.title+'</div><div class="qi-meta">'+item.condition+(item.location?' · 📍'+item.location:'')+'</div></div><div class="qi-price">'+item.price.toFixed(2)+'€</div></a>'}).join('');
+        document.getElementById('qcActiveItems').innerHTML=data.items.map(function(item){
+          var shipTxt=item.shipping>0?' + '+item.shipping.toFixed(2)+'€ Versand':'· Kostenloser Versand';
+          return'<a class="qc-item" href="'+item.url+'" target="_blank" rel="noopener">'+(item.img?'<img src="'+item.img+'" alt="">':'')+'<div class="qi-info"><div class="qi-title">'+item.title+'</div><div class="qi-meta">'+item.condition+' '+shipTxt+(item.location?' · 📍'+item.location:'')+'</div></div><div class="qi-price">'+item.totalPrice.toFixed(2)+'€</div></a>'}).join('');
       }
-    }else{h='<div class="card"><div style="text-align:center;padding:10px;color:#64748b">Keine aktiven Angebote gefunden.</div></div>'}
-    document.getElementById('qcLiveResults').innerHTML=h;
-    document.getElementById('qcLiveResults').style.display='block';
+      document.getElementById('qcActiveItems').style.display='none';
+      document.getElementById('qcActiveArrow').textContent='▼';
+    }else{
+      document.getElementById('qcStatsArea').innerHTML='<div class="card"><div style="text-align:center;padding:10px;color:#64748b">Keine aktiven Angebote gefunden.</div></div>';
+      document.getElementById('qcStatsArea').style.display='block';
+      document.getElementById('qcActiveCount').textContent='(0)';
+      document.getElementById('qcActiveItems').innerHTML='';
+    }
+    document.getElementById('qcSections').style.display='block';
   }catch(err){
-    document.getElementById('qcLiveResults').innerHTML='<div class="card"><div style="text-align:center;padding:10px;color:#fca5a5">Fehler: '+err.message+'</div></div>';
-    document.getElementById('qcLiveResults').style.display='block';
+    document.getElementById('qcStatsArea').innerHTML='<div class="card"><div style="text-align:center;padding:10px;color:#fca5a5">Fehler: '+err.message+'</div></div>';
+    document.getElementById('qcStatsArea').style.display='block';
   }
   document.getElementById('qcLoading').style.display='none';
   document.getElementById('qcGoBtn').textContent='🔍';
