@@ -109,6 +109,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .qc-btn-arrow{font-size:18px;opacity:0.6}
 .qc-chip{display:inline-block;padding:6px 12px;border-radius:20px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:12px;margin:0 6px 6px 0;cursor:pointer}
 .qc-chip:active{background:#334155;color:#e2e8f0}
+
+.qc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 12px}
+.qc-stat{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px;text-align:center}
+.qc-stat .qn{font-size:18px;font-weight:800}.qc-stat .ql{font-size:9px;color:#94a3b8;text-transform:uppercase;margin-top:2px}
+.qc-item{background:#1e293b;border-radius:8px;padding:10px;margin:0 12px 6px;border:1px solid #334155;display:flex;gap:10px;text-decoration:none;color:inherit}
+.qc-item:active{background:#1e2d4a}
+.qc-item img{width:60px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#334155}
+.qc-item .qi-info{flex:1;min-width:0}
+.qc-item .qi-title{font-size:12px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.qc-item .qi-meta{font-size:10px;color:#64748b;margin-top:3px}
+.qc-item .qi-price{font-size:15px;font-weight:800;color:#4ade80;flex-shrink:0;align-self:center}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;z-index:1000;animation:toastAnim 2.2s forwards;box-shadow:0 4px 20px rgba(0,0,0,0.5);white-space:nowrap}
 @keyframes toastAnim{0%{opacity:0;transform:translateX(-50%) translateY(20px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}82%{opacity:1}100%{opacity:0}}
 .upd{margin:12px;padding:8px 14px;border-radius:8px;background:#172554;border:1px solid #1e40af;font-size:11px;color:#93c5fd;display:flex;justify-content:space-between;align-items:center}
@@ -152,8 +163,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div id="salesContent"></div>
 </div>
 <div class="page" id="pageCheck">
-  <div class="card" style="margin-top:12px"><div class="card-title">🔍 Markt-Check</div><div style="font-size:12px;color:#94a3b8;margin-bottom:10px">Keyword eingeben → Verkaufte & aktive Angebote prüfen</div><div class="qc-input-row" style="margin:0"><input class="qc-input" id="qcInput" placeholder="" autocomplete="off"><button class="qc-go" onclick="runCheck()">🔍</button></div></div>
-  <div class="qc-results" id="qcResults" style="display:none"><a class="qc-btn qc-btn-sold" id="qcSold" href="#" target="_blank" rel="noopener"><span class="qc-btn-icon">🔴</span><span class="qc-btn-text"><span class="qc-btn-title">Verkaufte Artikel</span><span class="qc-btn-desc">Was wurde in den letzten 90 Tagen bezahlt?</span></span><span class="qc-btn-arrow">→</span></a><a class="qc-btn qc-btn-active" id="qcActive" href="#" target="_blank" rel="noopener"><span class="qc-btn-icon">🟢</span><span class="qc-btn-text"><span class="qc-btn-title">Aktive Angebote</span><span class="qc-btn-desc">Was wird gerade angeboten & zu welchem Preis?</span></span><span class="qc-btn-arrow">→</span></a></div>
+  <div class="card" style="margin-top:12px"><div class="card-title">🔍 Markt-Check</div><div class="qc-input-row" style="margin:0"><input class="qc-input" id="qcInput" placeholder="" autocomplete="off"><button class="qc-go" id="qcGoBtn" onclick="runCheck()">🔍</button></div></div>
+  <div id="qcLoading" style="display:none;text-align:center;padding:20px;color:#64748b;font-size:13px">⏳ Lade Marktdaten...</div>
+  <div id="qcLiveResults" style="display:none"></div>
+  <div class="qc-results" id="qcResults" style="display:none"><a class="qc-btn qc-btn-sold" id="qcSold" href="#" target="_blank" rel="noopener"><span class="qc-btn-icon">🔴</span><span class="qc-btn-text"><span class="qc-btn-title">Verkaufte Artikel auf eBay ansehen</span><span class="qc-btn-desc">Letzte 90 Tage öffnen</span></span><span class="qc-btn-arrow">→</span></a></div>
+  <div class="card"><div class="card-title">🕒 Letzte Suchen</div><div id="qcHistory" style="margin:0"></div></div>
+</div>
 </div>
 <div class="upd"><span>Datenstand: 17.04.2026</span><span style="display:flex;gap:6px"><button class="ref-btn" onclick="downloadFahrtenbuch()" style="background:#1e293b;border:1px solid #334155">🚗</button><button class="ref-btn" onclick="forceRefresh()">🔄</button></span></div>
 
@@ -297,15 +312,53 @@ function renderSales(){
     return'<a class="order-item" href="'+link+'" target="_blank" rel="noopener"><div class="oi-top"><div class="oi-title">'+x.title+' <span class="ebay-icon">↗</span></div><div class="oi-price">'+(x.price+(x.shipping||0)).toFixed(2)+'€</div></div><div class="oi-meta">'+dateChip+x.date+' · 👤 '+x.buyer+repeatTag+(x.shipping?' · (inkl. '+x.shipping.toFixed(2)+'€ Versand)':'')+(x.sku?' · 🏷 '+x.sku:'')+'</div></a>'}).join('');
 }
 
-// === QUICK CHECK ===
+// === QUICK CHECK (LIVE API) ===
+const WORKER_URL='https://nerdy-ebay-api.loligeslol90.workers.dev';
 let checkHistory=[];try{const h=localStorage.getItem('qc_history');if(h)checkHistory=JSON.parse(h)}catch(e){}
-function runCheck(keyword){const q=keyword||document.getElementById('qcInput').value.trim();if(!q)return;document.getElementById('qcInput').value=q;const enc=encodeURIComponent(q);document.getElementById('qcSold').href='https://www.ebay.de/sch/i.html?_nkw='+enc+'&LH_Sold=1&LH_Complete=1&_sop=13&rt=nc';document.getElementById('qcActive').href='https://www.ebay.de/sch/i.html?_nkw='+enc+'&_sop=15&rt=nc';document.getElementById('qcResults').style.display='block';checkHistory=checkHistory.filter(h=>h!==q);checkHistory.unshift(q);if(checkHistory.length>10)checkHistory=checkHistory.slice(0,10);try{localStorage.setItem('qc_history',JSON.stringify(checkHistory))}catch(e){}renderCheckHistory()}
+let isChecking=false;
+
+async function runCheck(keyword){
+  const q=keyword||document.getElementById('qcInput').value.trim();
+  if(!q||isChecking)return;
+  document.getElementById('qcInput').value=q;
+  isChecking=true;
+  checkHistory=checkHistory.filter(h=>h!==q);checkHistory.unshift(q);
+  if(checkHistory.length>10)checkHistory=checkHistory.slice(0,10);
+  try{localStorage.setItem('qc_history',JSON.stringify(checkHistory))}catch(e){}
+  renderCheckHistory();
+  const enc=encodeURIComponent(q);
+  document.getElementById('qcSold').href='https://www.ebay.de/sch/i.html?_nkw='+enc+'&LH_Sold=1&LH_Complete=1&_sop=13&rt=nc';
+  document.getElementById('qcResults').style.display='block';
+  document.getElementById('qcLoading').style.display='block';
+  document.getElementById('qcLiveResults').style.display='none';
+  document.getElementById('qcGoBtn').textContent='⏳';
+  try{
+    const resp=await fetch(WORKER_URL+'?q='+enc+'&type=active');
+    const data=await resp.json();
+    let h='';
+    if(data.stats&&data.stats.total>0){
+      h+='<div class="qc-stats"><div class="qc-stat"><div class="qn blue">'+data.stats.total+'</div><div class="ql">Aktive Angebote</div></div><div class="qc-stat"><div class="qn green">'+data.stats.avgPrice.toFixed(2)+'€</div><div class="ql">Ø Preis</div></div><div class="qc-stat"><div class="qn white">'+data.stats.minPrice.toFixed(2)+'€</div><div class="ql">Günstigster</div></div><div class="qc-stat"><div class="qn white">'+data.stats.maxPrice.toFixed(2)+'€</div><div class="ql">Teuerster</div></div></div>';
+      if(data.items&&data.items.length){
+        h+='<div class="card" style="padding:8px"><div class="card-title" style="margin:6px 6px 8px">🟢 Top '+data.items.length+' Angebote</div></div>';
+        h+=data.items.map(function(item){return'<a class="qc-item" href="'+item.url+'" target="_blank" rel="noopener">'+(item.img?'<img src="'+item.img+'" alt="">':'')+'<div class="qi-info"><div class="qi-title">'+item.title+'</div><div class="qi-meta">'+item.condition+(item.location?' · 📍'+item.location:'')+'</div></div><div class="qi-price">'+item.price.toFixed(2)+'€</div></a>'}).join('');
+      }
+    }else{h='<div class="card"><div style="text-align:center;padding:10px;color:#64748b">Keine aktiven Angebote gefunden.</div></div>'}
+    document.getElementById('qcLiveResults').innerHTML=h;
+    document.getElementById('qcLiveResults').style.display='block';
+  }catch(err){
+    document.getElementById('qcLiveResults').innerHTML='<div class="card"><div style="text-align:center;padding:10px;color:#fca5a5">Fehler: '+err.message+'</div></div>';
+    document.getElementById('qcLiveResults').style.display='block';
+  }
+  document.getElementById('qcLoading').style.display='none';
+  document.getElementById('qcGoBtn').textContent='🔍';
+  isChecking=false;
+}
 function renderCheckHistory(){const el=document.getElementById('qcHistory');if(!checkHistory.length){el.innerHTML='<span style="font-size:12px;color:#475569">Noch keine Suchen</span>';return}el.innerHTML=checkHistory.map(h=>'<span class="qc-chip" onclick="runCheck(\''+h.replace(/'/g,"\\'")+'\')">'+h+'</span>').join('')}
 document.getElementById('qcInput').addEventListener('keyup',e=>{if(e.key==='Enter')runCheck()});
 
 // === PASSWORD ===
-function tryUnlock(){const input=document.getElementById('lockInput').value.trim();if(input==='257407090'){document.getElementById('lockOverlay').style.display='none';try{sessionStorage.setItem('nerdy_unlocked','1')}catch(e){}}else{document.getElementById('lockError').className='lock-error show';document.getElementById('lockInput').value='';document.getElementById('lockInput').focus();setTimeout(()=>{document.getElementById('lockError').className='lock-error'},2000)}}
-try{if(sessionStorage.getItem('nerdy_unlocked')==='1')document.getElementById('lockOverlay').style.display='none'}catch(e){}
+function tryUnlock(){const input=document.getElementById('lockInput').value.trim();if(input==='257407090'){document.getElementById('lockOverlay').style.display='none';try{localStorage.setItem('nerdy_unlocked','1')}catch(e){}}else{document.getElementById('lockError').className='lock-error show';document.getElementById('lockInput').value='';document.getElementById('lockInput').focus();setTimeout(()=>{document.getElementById('lockError').className='lock-error'},2000)}}
+try{if(localStorage.getItem('nerdy_unlocked')==='1')document.getElementById('lockOverlay').style.display='none'}catch(e){}
 document.getElementById('lockInput').addEventListener('keyup',e=>{if(e.key==='Enter')tryUnlock()});
 
 renderOverview();renderLager();renderCheckHistory();
