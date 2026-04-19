@@ -390,42 +390,33 @@ async function liveSync(){
   document.getElementById('syncBtn').textContent='⏳';
   document.getElementById('syncResults').style.display='none';
   try{
-    const resp=await fetch(WORKER_URL+'?seller=my-nerdy-hobby');
+    const ids=items.map(function(i){return i.id});
+    const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids:ids})});
     const data=await resp.json();
     if(data.error){showToast('❌ '+data.error);isSyncing=false;document.getElementById('syncBtn').textContent='⚡';return}
     
     // Build lookup from embedded data
-    const localMap={};items.forEach(function(i){localMap[i.id]={title:i.title,price:i.price}});
-    const liveMap={};data.items.forEach(function(i){liveMap[i.id]={title:i.title,price:i.price}});
+    const liveMap={};(data.items||[]).forEach(function(i){liveMap[i.id]={title:i.title,price:i.price}});
+    const notFoundSet=new Set(data.notFound||[]);
     
-    // Find changes
     const priceChanges=[];
     const removed=[];
-    const newItems=[];
     
-    // Check each local item against live data
     items.forEach(function(i){
       if(liveMap[i.id]){
         if(Math.abs(liveMap[i.id].price-i.price)>0.01){
-          priceChanges.push({title:i.title.substring(0,45),oldPrice:i.price,newPrice:liveMap[i.id].price});
+          priceChanges.push({id:i.id,title:i.title.substring(0,45),oldPrice:i.price,newPrice:liveMap[i.id].price});
         }
-      }else{
+      }else if(notFoundSet.has(i.id)){
         removed.push({title:i.title.substring(0,45),price:i.price});
-      }
-    });
-    
-    // Check for items in live but not in local
-    data.items.forEach(function(i){
-      if(!localMap[i.id]){
-        newItems.push({title:i.title.substring(0,45),price:i.price});
       }
     });
     
     // Build results HTML
     let html='';
-    const totalChanges=priceChanges.length+removed.length+newItems.length;
+    const totalChanges=priceChanges.length+removed.length;
     
-    html+='<div class="sync-card"><div class="sync-title"><span>⚡ Live Sync · '+data.fetched+' Artikel online</span><button class="sync-close" onclick="document.getElementById(\'syncResults\').style.display=\'none\'">✕</button></div>';
+    html+='<div class="sync-card"><div class="sync-title"><span>⚡ Live Sync · '+data.found+'/'+data.sent+' Artikel online</span><button class="sync-close" onclick="document.getElementById(\'syncResults\').style.display=\'none\'">✕</button></div>';
     
     if(totalChanges===0){
       html+='<div style="text-align:center;padding:8px;color:#4ade80;font-size:13px">✅ Alles aktuell – keine Änderungen</div>';
@@ -441,25 +432,29 @@ async function liveSync(){
     }
     
     if(removed.length){
-      html+='<div style="font-size:11px;font-weight:700;color:#fca5a5;margin:8px 0 4px">🔴 '+removed.length+' nicht mehr online</div>';
+      html+='<div style="font-size:11px;font-weight:700;color:#fca5a5;margin:8px 0 4px">🔴 '+removed.length+' nicht mehr online (verkauft/entfernt)</div>';
       removed.forEach(function(r){
         html+='<div class="sync-item"><span class="sync-removed">'+r.title+'</span><span style="color:#64748b">'+r.price.toFixed(2)+'€</span></div>';
       });
     }
     
-    if(newItems.length){
-      html+='<div style="font-size:11px;font-weight:700;color:#4ade80;margin:8px 0 4px">🟢 '+newItems.length+' neue Artikel</div>';
-      newItems.forEach(function(n){
-        html+='<div class="sync-item"><span style="color:#4ade80">'+n.title+'</span><span style="color:#4ade80;font-weight:700">'+n.price.toFixed(2)+'€</span></div>';
-      });
-    }
     
     html+='</div>';
     
     document.getElementById('syncResults').innerHTML=html;
     document.getElementById('syncResults').style.display='block';
     document.getElementById('syncResults').scrollIntoView({behavior:'smooth'});
-    showToast('⚡ Sync: '+data.fetched+' online · '+totalChanges+' Änderungen');
+    // Update local prices
+    if(priceChanges.length){
+      priceChanges.forEach(function(c){
+        items.forEach(function(i){
+          if(i.id===c.id){i.price=c.newPrice}
+        });
+      });
+      renderOverview();renderLager();
+    }
+    
+    showToast('⚡ Sync: '+data.found+' online · '+totalChanges+' Änderungen');
     
   }catch(err){
     showToast('❌ Sync fehlgeschlagen: '+err.message);
