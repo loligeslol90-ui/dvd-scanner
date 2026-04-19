@@ -391,17 +391,17 @@ async function liveSync(){
   document.getElementById('syncResults').style.display='none';
   try{
     const ids=items.map(function(i){return i.id});
-    const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids:ids})});
-    const data=await resp.json();
-    if(data.error){showToast('❌ '+data.error);isSyncing=false;document.getElementById('syncBtn').textContent='⚡';return}
-    
-    // Build lookup from embedded data
-    const liveMap={};(data.items||[]).forEach(function(i){liveMap[i.id]={title:i.title,price:i.price}});
-    const notFoundSet=new Set(data.notFound||[]);
-    
-    const priceChanges=[];
-    const removed=[];
-    
+    const liveMap={};const notFound=[];
+    // Batch: 20 IDs per request via GET
+    for(let i=0;i<ids.length;i+=20){
+      const batch=ids.slice(i,i+20);
+      const resp=await fetch(WORKER_URL+'?sync='+batch.join(','));
+      const data=await resp.json();
+      if(data.items)(data.items).forEach(function(it){liveMap[it.id]={title:it.title,price:it.price}});
+      if(data.notFound)(data.notFound).forEach(function(id){notFound.push(id)});
+    }
+    const notFoundSet=new Set(notFound);
+    const priceChanges=[];const removed=[];
     items.forEach(function(i){
       if(liveMap[i.id]){
         if(Math.abs(liveMap[i.id].price-i.price)>0.01){
@@ -411,54 +411,26 @@ async function liveSync(){
         removed.push({title:i.title.substring(0,45),price:i.price});
       }
     });
-    
-    // Build results HTML
-    let html='';
+    const found=Object.keys(liveMap).length;
     const totalChanges=priceChanges.length+removed.length;
-    
-    html+='<div class="sync-card"><div class="sync-title"><span>⚡ Live Sync · '+data.found+'/'+data.sent+' Artikel online</span><button class="sync-close" onclick="document.getElementById(\'syncResults\').style.display=\'none\'">✕</button></div>';
-    
-    if(totalChanges===0){
-      html+='<div style="text-align:center;padding:8px;color:#4ade80;font-size:13px">✅ Alles aktuell – keine Änderungen</div>';
-    }else{
-      html+='<div style="font-size:11px;color:#94a3b8;margin-bottom:8px">'+totalChanges+' Änderung'+(totalChanges>1?'en':'')+' seit letztem Bericht</div>';
-    }
-    
+    var html='<div class="sync-card"><div class="sync-title"><span>⚡ Live Sync · '+found+'/'+ids.length+' online</span><button class="sync-close" onclick="document.getElementById(\'syncResults\').style.display=\'none\'">✕</button></div>';
+    if(totalChanges===0){html+='<div style="text-align:center;padding:8px;color:#4ade80;font-size:13px">✅ Alles aktuell – keine Änderungen</div>'}
+    else{html+='<div style="font-size:11px;color:#94a3b8;margin-bottom:8px">'+totalChanges+' Änderung'+(totalChanges>1?'en':'')+' seit letztem Bericht</div>'}
     if(priceChanges.length){
       html+='<div style="font-size:11px;font-weight:700;color:#fbbf24;margin:8px 0 4px">💰 '+priceChanges.length+' Preisänderung'+(priceChanges.length>1?'en':'')+'</div>';
-      priceChanges.forEach(function(c){
-        html+='<div class="sync-item"><span style="flex:1;color:#e2e8f0">'+c.title+'</span><span><span class="sync-old">'+c.oldPrice.toFixed(2)+'€</span> <span class="sync-new">'+c.newPrice.toFixed(2)+'€</span></span></div>';
-      });
+      priceChanges.forEach(function(c){html+='<div class="sync-item"><span style="flex:1;color:#e2e8f0">'+c.title+'</span><span><span class="sync-old">'+c.oldPrice.toFixed(2)+'€</span> <span class="sync-new">'+c.newPrice.toFixed(2)+'€</span></span></div>'});
     }
-    
     if(removed.length){
       html+='<div style="font-size:11px;font-weight:700;color:#fca5a5;margin:8px 0 4px">🔴 '+removed.length+' nicht mehr online (verkauft/entfernt)</div>';
-      removed.forEach(function(r){
-        html+='<div class="sync-item"><span class="sync-removed">'+r.title+'</span><span style="color:#64748b">'+r.price.toFixed(2)+'€</span></div>';
-      });
+      removed.forEach(function(r){html+='<div class="sync-item"><span class="sync-removed">'+r.title+'</span><span style="color:#64748b">'+r.price.toFixed(2)+'€</span></div>'});
     }
-    
-    
     html+='</div>';
-    
     document.getElementById('syncResults').innerHTML=html;
     document.getElementById('syncResults').style.display='block';
     document.getElementById('syncResults').scrollIntoView({behavior:'smooth'});
-    // Update local prices
-    if(priceChanges.length){
-      priceChanges.forEach(function(c){
-        items.forEach(function(i){
-          if(i.id===c.id){i.price=c.newPrice}
-        });
-      });
-      renderOverview();renderLager();
-    }
-    
-    showToast('⚡ Sync: '+data.found+' online · '+totalChanges+' Änderungen');
-    
-  }catch(err){
-    showToast('❌ Sync fehlgeschlagen: '+err.message);
-  }
+    if(priceChanges.length){priceChanges.forEach(function(c){items.forEach(function(i){if(i.id===c.id){i.price=c.newPrice}})});renderOverview();renderLager()}
+    showToast('⚡ '+found+' online · '+totalChanges+' Änderungen');
+  }catch(err){showToast('❌ '+err.message)}
   document.getElementById('syncBtn').textContent='⚡';
   isSyncing=false;
 }
