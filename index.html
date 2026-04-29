@@ -268,6 +268,7 @@ function filterBoxItems(){
   renderBoxItems(filtered);
 }
 
+function toggleRadar(cat){window._radarCat=window._radarCat===cat?'all':cat;renderLager()}
 function showLagerTab(tab){lagerTab=tab;document.querySelectorAll('#pageLager .sub-tab').forEach(t=>t.className='sub-tab');const tabs=document.querySelectorAll('#pageLager .sub-tab');const idx={boxes:0,all:1,radar:2}[tab];if(tabs[idx])tabs[idx].className='sub-tab active';document.getElementById('lagerSort').style.display=(tab==='all'||tab==='radar')?'block':'none';renderLager()}
 function toggleLagerSort(){lagerSortDir=lagerSortDir==='desc'?'asc':'desc';document.getElementById('lagerSort').textContent=lagerSortDir==='desc'?'💰 ↓':'💰 ↑';renderLager()}
 function renderLager(){
@@ -284,11 +285,14 @@ function renderLager(){
     if(!window._radarCat)window._radarCat='all';
     const rc=window._radarCat;
     const boundVal=cats.act.reduce(function(s,i){return s+i.price},0);
+    function rBtn(key,color,label,count){
+      var sel=rc===key?'border:2px solid '+color:'';
+      return'<div class="qc-stat" style="cursor:pointer;'+sel+'" onclick="toggleRadar(&#39;'+key+'&#39;)"><div class="qn" style="color:'+color+'">'+count+'</div><div class="ql">'+label+'</div></div>';}
     let statsHtml='<div class="qc-stats" style="margin:8px 12px">'
-      +'<div class="qc-stat" style="cursor:pointer;'+(rc==='fresh'?'border:2px solid #22c55e':'')+'" onclick="window._radarCat=window._radarCat===\'fresh\'?\'all\':\'fresh\';renderLager()"><div class="qn green">'+cats.fresh.length+'</div><div class="ql">🟢 Frisch</div></div>'
-      +'<div class="qc-stat" style="cursor:pointer;'+(rc==='hot'?'border:2px solid #3b82f6':'')+'" onclick="window._radarCat=window._radarCat===\'hot\'?\'all\':\'hot\';renderLager()"><div class="qn blue">'+cats.hot.length+'</div><div class="ql">🔵 Läuft</div></div>'
-      +'<div class="qc-stat" style="cursor:pointer;'+(rc==='watch'?'border:2px solid #f59e0b':'')+'" onclick="window._radarCat=window._radarCat===\'watch\'?\'all\':\'watch\';renderLager()"><div class="qn" style="color:#f59e0b">'+cats.watch.length+'</div><div class="ql">🟡 Beobachten</div></div>'
-      +'<div class="qc-stat" style="cursor:pointer;'+(rc==='act'?'border:2px solid #ef4444':'')+'" onclick="window._radarCat=window._radarCat===\'act\'?\'all\':\'act\';renderLager()"><div class="qn" style="color:#ef4444">'+cats.act.length+'</div><div class="ql">🔴 Handeln</div></div></div>';
+      +rBtn('fresh','#22c55e','🟢 Frisch',cats.fresh.length)
+      +rBtn('hot','#3b82f6','🔵 Läuft',cats.hot.length)
+      +rBtn('watch','#f59e0b','🟡 Beobachten',cats.watch.length)
+      +rBtn('act','#ef4444','🔴 Handeln',cats.act.length)+'</div>';
     let list=rc==='all'?[]:cats[rc]||[];
     if(rc==='all'){
       c.innerHTML=statsHtml+'<div class="card" style="margin:0 12px 8px"><div style="font-size:12px;color:#94a3b8;text-align:center;padding:4px">Tippe auf eine Kategorie</div></div>'
@@ -302,7 +306,6 @@ function renderLager(){
     const colors={fresh:'#22c55e',hot:'#3b82f6',watch:'#f59e0b',act:'#ef4444'};
     const col=colors[rc]||'#64748b';
     if(!list.length){c.innerHTML=statsHtml+'<div class="empty"><div class="icon">✅</div>Keine Artikel</div>';return}
-    const tv=a.reduce((s,i)=>s+i.price*(i.qty||1),0);
     c.innerHTML=statsHtml+list.map(function(i){var meta=i.daysListed+'T';if(i.watchers)meta+=' · 👁 '+i.watchers;if(i.clicks)meta+=' · 👆 '+i.clicks;if(i.imp)meta+=' · 👀 '+i.imp;if(i.sku)meta+=' · '+i.sku;return'<a class="radar-item" href="'+ebayUrl(i.id)+'" target="_blank" rel="noopener" style="border-left-color:'+col+'"><div class="ri-info"><div class="ri-title">'+i.title+' <span class="ebay-icon">↗</span></div><div class="ri-meta">'+meta+'</div></div><div class="ri-right"><div class="ri-price">'+i.price.toFixed(2)+'€</div><div class="ri-days">'+i.daysListed+' Tage</div></div></a>'}).join('');
   }else{
     let a=[...items];if(s)a=a.filter(i=>i.title.toLowerCase().includes(s)||(i.sku||'').toLowerCase().includes(s)||i.category.toLowerCase().includes(s));a.sort((x,y)=>lagerSortDir==='desc'?y.price-x.price:x.price-y.price);
