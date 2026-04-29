@@ -280,11 +280,15 @@ function renderLager(){
     c.innerHTML=k.map(sku=>{const bi=m[sku];const v=bi.reduce((s,i)=>s+i.price*(i.qty||1),0);const p=sku.split('-');const isStd=/^[A-D]-[1-5]-B[1-6]$/.test(sku);const info=isStd?'Regal '+p[0]+' · Ebene '+p[1]+' · Box '+p[2]:sku;const isBdl=isBundel(sku);const cp=boxCapacity(bi);const capTxt=(isBdl||cp.free<=0)?'':'<span class="slot-badge '+cp.cls+'">'+cp.free+' frei</span>';return'<div class="li" onclick="showBoxDetail(\''+sku+'\')"><div class="li-i"><div style="font-size:16px;font-weight:800;color:#60a5fa">'+sku+'</div><div class="li-m">'+bi.length+' Artikel · '+info+capTxt+'</div></div><div class="li-r"><div class="li-p">'+v.toFixed(2)+'€</div></div></div>'}).join('');
   }else if(lagerTab==='radar'){
     const cats={fresh:[],hot:[],watch:[],act:[]};
-    items.forEach(function(i){const d=i.daysListed||0,w=i.watchers||0,cl=i.clicks||0;
-      if(d<14){cats.fresh.push(i)}else if(w>0||cl>0){cats.hot.push(i)}else if(d<60){cats.watch.push(i)}else{cats.act.push(i)}});
+    items.forEach(function(i){const d=i.daysListed||0,w=i.watchers||0,cl=i.clicks||0,im=i.imp||0;
+      if(d<7){cats.fresh.push(i)}
+      else if(w>0||cl>0){cats.hot.push(i)}
+      else if(im>0&&d<60){cats.watch.push(i)}
+      else{cats.act.push(i)}});
     if(!window._radarCat)window._radarCat='all';
     const rc=window._radarCat;
     const boundVal=cats.act.reduce(function(s,i){return s+i.price},0);
+    const invisCount=cats.act.filter(function(i){return(i.imp||0)===0&&(i.daysListed||0)>=7}).length;
     function rBtn(key,color,label,count){
       var sel=rc===key?'border:2px solid '+color:'';
       return'<div class="qc-stat" style="cursor:pointer;'+sel+'" onclick="toggleRadar(&#39;'+key+'&#39;)"><div class="qn" style="color:'+color+'">'+count+'</div><div class="ql">'+label+'</div></div>';}
@@ -296,17 +300,17 @@ function renderLager(){
     let list=rc==='all'?[]:cats[rc]||[];
     if(rc==='all'){
       c.innerHTML=statsHtml+'<div class="card" style="margin:0 12px 8px"><div style="font-size:12px;color:#94a3b8;text-align:center;padding:4px">Tippe auf eine Kategorie</div></div>'
-        +(cats.act.length?'<div class="card" style="margin:0 12px"><div style="font-size:11px;color:#fca5a5">🔴 '+cats.act.length+' Artikel · 60+ Tage ohne Aktivität · <span style="color:#ef4444;font-weight:700">'+boundVal.toFixed(2)+'€</span> gebunden</div></div>':'');
+        +(cats.act.length?'<div class="card" style="margin:0 12px 6px"><div style="font-size:11px;color:#fca5a5">🔴 '+cats.act.length+' Artikel · <span style="color:#ef4444;font-weight:700">'+boundVal.toFixed(2)+'€</span> gebunden'+(invisCount?' · davon '+invisCount+'× unsichtbar (0 Aufrufe)':'')+'</div></div>':'');
       return}
     if(s)list=list.filter(function(i){return i.title.toLowerCase().includes(s)||(i.sku||'').toLowerCase().includes(s)});
-    if(rc==='act')list.sort(function(a,b){return(b.daysListed||0)-(a.daysListed||0)});
+    if(rc==='act')list.sort(function(a,b){var ai=a.imp||0,bi=b.imp||0;if(ai===0&&bi>0)return-1;if(bi===0&&ai>0)return 1;return(b.daysListed||0)-(a.daysListed||0)});
     else if(rc==='hot')list.sort(function(a,b){return((b.watchers||0)+(b.clicks||0))-((a.watchers||0)+(a.clicks||0))});
     else if(rc==='watch')list.sort(function(a,b){return(b.daysListed||0)-(a.daysListed||0)});
     else list.sort(function(a,b){return(a.daysListed||0)-(b.daysListed||0)});
     const colors={fresh:'#22c55e',hot:'#3b82f6',watch:'#f59e0b',act:'#ef4444'};
     const col=colors[rc]||'#64748b';
     if(!list.length){c.innerHTML=statsHtml+'<div class="empty"><div class="icon">✅</div>Keine Artikel</div>';return}
-    c.innerHTML=statsHtml+list.map(function(i){var meta=i.daysListed+'T';if(i.watchers)meta+=' · 👁 '+i.watchers;if(i.clicks)meta+=' · 👆 '+i.clicks;if(i.imp)meta+=' · 👀 '+i.imp;if(i.sku)meta+=' · '+i.sku;return'<a class="radar-item" href="'+ebayUrl(i.id)+'" target="_blank" rel="noopener" style="border-left-color:'+col+'"><div class="ri-info"><div class="ri-title">'+i.title+' <span class="ebay-icon">↗</span></div><div class="ri-meta">'+meta+'</div></div><div class="ri-right"><div class="ri-price">'+i.price.toFixed(2)+'€</div><div class="ri-days">'+i.daysListed+' Tage</div></div></a>'}).join('');
+    c.innerHTML=statsHtml+list.map(function(i){var meta=i.daysListed+'T';if(i.watchers)meta+=' · 👁 '+i.watchers;if(i.clicks)meta+=' · 👆 '+i.clicks;if(i.imp)meta+=' · 👀 '+i.imp;else if((i.daysListed||0)>=7)meta+=' · <span style="color:#ef4444">⚠️ 0 Aufrufe</span>';if(i.sku)meta+=' · '+i.sku;return'<a class="radar-item" href="'+ebayUrl(i.id)+'" target="_blank" rel="noopener" style="border-left-color:'+col+'"><div class="ri-info"><div class="ri-title">'+i.title+' <span class="ebay-icon">↗</span></div><div class="ri-meta">'+meta+'</div></div><div class="ri-right"><div class="ri-price">'+i.price.toFixed(2)+'€</div><div class="ri-days">'+i.daysListed+' Tage</div></div></a>'}).join('');
   }else{
     let a=[...items];if(s)a=a.filter(i=>i.title.toLowerCase().includes(s)||(i.sku||'').toLowerCase().includes(s)||i.category.toLowerCase().includes(s));a.sort((x,y)=>lagerSortDir==='desc'?y.price-x.price:x.price-y.price);
     if(!a.length){c.innerHTML='<div class="empty">Keine Artikel.</div>';return}
