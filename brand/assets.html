@@ -17,7 +17,7 @@ svg{display:block}
 .profile{width:1080px;height:1080px;display:flex;align-items:center;justify-content:center}
 .profile.cream{background:var(--cream)}
 .profile.navy{background:var(--navy)}
-.profile svg{width:640px}
+.profile svg{width:720px}
 
 /* Banner 1280×288 (eBay), 2× gerendert */
 .banner{width:1280px;height:288px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:56px}
@@ -86,15 +86,19 @@ function heartRects(u,ox,oy,o){let navy='',red='';
 
 // Profilbild: nur das Herz (Bogentext wäre klein nicht lesbar)
 function heartMark(outline){
-  const u=10,o=3.2,{navy,red}=heartRects(u,0,0,o);
+  const u=10,o=2.4,{navy,red}=heartRects(u,0,0,o);
   return `<svg viewBox="${-o-1} ${-o-1} ${130+2*o+2} ${110+2*o+2}" shape-rendering="crispEdges">
     <g fill="${outline}">${navy}</g><g fill="${RED}">${red}</g>
-    <g fill="${CREAM}">${plusOne(41,28,4.8)}</g></svg>`;
+    <g fill="${CREAM}">${plusOne(65,45,3.6)}</g></svg>`;
 }
-// "+1" als Pixel (schriftunabhängig)
-function plusOne(ox,oy,s){
-  const g=['......##..','..#..###..','..#...##..','#####.##..','..#...##..','..#...##..','.....#####'];let r='';
-  g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${ox+x*s}" y="${oy+y*s}" width="${s+.1}" height="${s+.1}"/>`}));
+// "+1" als Pixel (schriftunabhängig), gleichmäßige 2er-Striche wie im Logo.
+// cx/cy = Mittelpunkt, s = Pixelgröße
+function plusOne(cx,cy,s){
+  const one=['..##..','.###..','..##..','..##..','..##..','..##..','######'];
+  const plus=['..##..','..##..','######','######','..##..','..##..'];
+  const W=14,H=7,ox=cx-W*s/2,oy=cy-H*s/2;let r='';
+  const put=(g,dx,dy)=>g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${ox+(dx+x)*s}" y="${oy+(dy+y)*s}" width="${s+.1}" height="${s+.1}"/>`}));
+  put(plus,0,.5);put(one,8,0);
   return r;
 }
 function badgeSVG(){
