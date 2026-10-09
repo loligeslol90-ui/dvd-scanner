@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonuslife Brand Assets</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f4ead2;--cream-d:#e8dcbc;--navy:#13204a;--red:#9c1b2b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d9d9d9;font-family:Inter,system-ui,sans-serif;padding:24px;display:flex;flex-direction:column;gap:32px;align-items:flex-start}
+.asset{position:relative;overflow:hidden;flex:none}
+.cap{font:600 14px Inter,sans-serif;color:#333;margin-bottom:6px}
+svg{display:block}
+
+/* Profilbild 1080×1080 */
+.profile{width:1080px;height:1080px;display:flex;align-items:center;justify-content:center}
+.profile.cream{background:var(--cream)}
+.profile.navy{background:var(--navy)}
+.profile svg{width:640px}
+
+/* Banner 1280×288 (eBay), 2× gerendert */
+.banner{width:1280px;height:288px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:56px}
+.banner .badge{width:212px;height:212px}
+.banner .mid{display:flex;flex-direction:column;align-items:center;gap:18px}
+.wm{font-family:"Press Start 2P",monospace;font-size:58px;letter-spacing:4px;color:var(--navy)}
+.wm span{color:var(--red)}
+.sl{font-family:"Press Start 2P",monospace;font-size:17px;letter-spacing:1px;color:var(--navy)}
+.sl span{color:var(--red)}
+.cat{font:600 17px Inter,sans-serif;color:#5b6380;letter-spacing:.3px}
+.lives{display:flex;gap:10px;align-items:center}
+.lives svg{width:34px}
+.lives b{font-family:"Press Start 2P",monospace;font-weight:400;font-size:16px;color:var(--red);margin-left:6px}
+.banner .dither{position:absolute;left:0;right:0;bottom:0;height:24px}
+.banner .dither.top{top:0;bottom:auto;transform:scaleY(-1)}
+
+/* Instagram/Facebook-Titelbild 1500×500 */
+.wide{width:1500px;height:500px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:80px}
+.wide .badge{width:340px;height:340px}
+.wide .wm{font-size:76px}
+.wide .sl{font-size:22px}
+.wide .cat{font-size:22px}
+.wide .mid{display:flex;flex-direction:column;align-items:flex-start;gap:26px}
+.wide .dither{position:absolute;left:0;right:0;bottom:0;height:36px}
+</style>
+</head>
+<body>
+<div><div class="cap">Profilbild (Creme) – eBay &amp; Instagram, 1080×1080</div><div class="asset profile cream" id="profileCream"></div></div>
+<div><div class="cap">Profilbild (Navy) – Alternative</div><div class="asset profile navy" id="profileNavy"></div></div>
+<div><div class="cap">eBay-Banner 1280×288</div>
+  <div class="asset banner" id="banner">
+    <svg class="dither top" data-dither="1280"></svg>
+    <div class="badge" data-badge></div>
+    <div class="mid">
+      <div class="wm">BONUS<span>LIFE</span></div>
+      <div class="sl">USED ONCE. <span>LOVED TWICE.</span></div>
+      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Retro &amp; mehr – aus zweiter Hand</div>
+    </div>
+    <div class="lives"><i data-heart></i><i data-heart></i><i data-heart></i><b>+1</b></div>
+    <svg class="dither" data-dither="1280"></svg>
+  </div>
+</div>
+<div><div class="cap">Breites Titelbild 1500×500 (z. B. Facebook, Linktree, Website)</div>
+  <div class="asset wide" id="wide">
+    <div class="badge" data-badge></div>
+    <div class="mid">
+      <div class="wm">BONUS<span>LIFE</span></div>
+      <div class="sl">USED ONCE. <span>LOVED TWICE.</span></div>
+      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Retro &amp; mehr</div>
+      <div class="lives"><i data-heart></i><i data-heart></i><i data-heart></i><b>+1</b></div>
+    </div>
+    <svg class="dither" data-dither="1500"></svg>
+  </div>
+</div>
+
+<script>
+const NAVY='#13204a',RED='#9c1b2b',CREAM='#f4ead2';
+const HEART_ROWS=[[2,4,8,10],[1,5,7,11],[0,12],[0,12],[0,12],[1,11],[2,10],[3,9],[4,8],[5,7],[6,6]];
+
+// Herz mit Navy-Kontur und "+1" (Grundform des Logos)
+function heartRects(u,ox,oy,o){let navy='',red='';
+  HEART_ROWS.forEach((r,y)=>{for(let i=0;i<r.length;i+=2){const x=ox+r[i]*u,w=(r[i+1]-r[i]+1)*u,yy=oy+y*u;
+    navy+=`<rect x="${x-o}" y="${yy-o}" width="${w+2*o}" height="${u+2*o}"/>`;
+    red+=`<rect x="${x}" y="${yy}" width="${w}" height="${u+.5}"/>`;}});
+  return {navy,red};}
+
+// Profilbild: nur das Herz (Bogentext wäre klein nicht lesbar)
+function heartMark(outline){
+  const u=10,o=3.2,{navy,red}=heartRects(u,0,0,o);
+  return `<svg viewBox="${-o-1} ${-o-1} ${130+2*o+2} ${110+2*o+2}" shape-rendering="crispEdges">
+    <g fill="${outline}">${navy}</g><g fill="${RED}">${red}</g>
+    <g fill="${CREAM}">${plusOne(41,28,4.8)}</g></svg>`;
+}
+// "+1" als Pixel (schriftunabhängig)
+function plusOne(ox,oy,s){
+  const g=['......##..','..#..###..','..#...##..','#####.##..','..#...##..','..#...##..','.....#####'];let r='';
+  g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${ox+x*s}" y="${oy+y*s}" width="${s+.1}" height="${s+.1}"/>`}));
+  return r;
+}
+function badgeSVG(){
+  const {navy,red}=heartRects(9,41.5,44,2.2);
+  return `<svg viewBox="0 0 200 200" shape-rendering="crispEdges">
+  <circle cx="100" cy="100" r="95" fill="${CREAM}" stroke="${NAVY}" stroke-width="7"/>
+  <g fill="${NAVY}">${navy}</g><g fill="${RED}">${red}</g>
+  <text x="101.5" y="93" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="19" fill="${CREAM}">+1</text>
+  <defs><path id="arc" d="M 16 100 A 84 84 0 0 0 184 100"/></defs>
+  <text font-family="'Press Start 2P',monospace" font-size="8.8" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="${NAVY}">USED ONCE. </tspan><tspan fill="${RED}">LOVED TWICE.</tspan></textPath></text></svg>`;
+}
+function smallHeart(){const g=['.##.##.','#######','#######','.#####.','..###..','...#...'];let r='';
+  g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}));
+  return `<svg viewBox="0 0 7 6" fill="${RED}" shape-rendering="crispEdges">${r}</svg>`;}
+function dither(svg,px){
+  const W=Math.round(px/12),H=2,B=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];let r='';
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(B[(y+2)%4][x%4]/16<(y+1)/H*.9)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML=`<g fill="${NAVY}" shape-rendering="crispEdges">${r}</g>`;}
+
+function render(){
+  document.getElementById('profileCream').innerHTML=heartMark(NAVY);
+  document.getElementById('profileNavy').innerHTML=heartMark(CREAM);
+  document.querySelectorAll('[data-badge]').forEach(e=>e.innerHTML=badgeSVG());
+  document.querySelectorAll('[data-heart]').forEach(e=>e.innerHTML=smallHeart());
+  document.querySelectorAll('[data-dither]').forEach(e=>dither(e,+e.dataset.dither));
+}
+render();
+if(document.fonts)document.fonts.ready.then(render);
+</script>
+</body>
+</html>
