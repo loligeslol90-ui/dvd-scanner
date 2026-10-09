@@ -64,11 +64,17 @@ h1{font-size:18px;margin-bottom:4px}
 
 /* Vorderseite */
 .front{align-items:center;text-align:center}
-.badge{width:52mm;height:52mm;margin-top:auto}
+.badge{width:50mm;height:50mm;margin-top:9mm}
+.edition{position:relative;display:flex;align-items:center;justify-content:center;gap:2.2mm;color:var(--cream);font-family:"Press Start 2P",monospace;font-size:3.2mm;letter-spacing:.3mm}
+.edition .px{width:3mm}
+.edition.ribbon{width:84mm;height:12mm;margin-top:5mm}
+.edition.ribbon>svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.edition.bar{align-self:stretch;height:13mm;margin-top:3mm;background:var(--navy);border-radius:1.5mm}
+.edition>*{position:relative}
 .badge img,.badge svg{width:100%;height:100%;object-fit:contain;display:block}
 .brand{font-family:"Press Start 2P",monospace;font-size:6mm;margin-top:6mm;letter-spacing:.4mm}
 .brand span{color:var(--accent)}
-.titlefield{align-self:stretch;margin-top:12mm;height:14mm;border:.5mm solid var(--fg);border-radius:2mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:0 4mm;overflow:hidden}
+.titlefield{align-self:stretch;margin-top:10mm;height:20mm;border:.5mm solid var(--fg);border-radius:2mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:0 4mm;overflow:hidden}
 .titlefield .t{font-weight:800;font-size:5.2mm;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Rückseite */
@@ -76,6 +82,7 @@ h1{font-size:18px;margin-bottom:4px}
 .head h2{font-family:"Press Start 2P",monospace;font-size:4.2mm;line-height:1.7;font-weight:400}
 .head h2 span{background:var(--red);padding:0 1mm;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .head p{font-size:3.5mm;line-height:1.45;margin-top:2.5mm;opacity:.88}
+.thanks{margin-top:5mm;font-weight:800;font-size:4mm;color:var(--accent);text-align:center}
 .qrs{margin:auto 0;display:flex;gap:6mm;justify-content:center}
 .qrcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2mm;max-width:52mm}
 .qrcard .k{font-family:"Press Start 2P",monospace;font-size:2.5mm;line-height:1.5;color:var(--accent)}
@@ -114,6 +121,7 @@ h1{font-size:18px;margin-bottom:4px}
     <label>eBay-Shop-Link<input id="url" value="https://www.ebay.de/usr/bonuslife-shop"></label>
     <label>Instagram-Link<input id="insta" placeholder="leer = nur Shop-Code"></label>
     <label>Original-Logo (PNG/SVG, optional)<input type="file" id="logo" accept="image/*"></label>
+    <label>Kopf vorne<select id="head"><option value="ribbon">Edition-Band (rot)</option><option value="bar">Edition-Leiste (navy)</option><option value="none">ohne</option></select></label>
     <label>Hintergrund<select id="theme"><option value="">Creme</option><option value="white">Weiß (für Creme-Papier / spart Tinte)</option></select></label>
     <label>Rücken (mm)<select id="spine"><option>5</option><option selected>7</option><option>9</option><option>14</option></select></label>
     <label>Seitenbreite (mm)<input id="pw" type="number" step="0.5" value="130"></label>
@@ -132,6 +140,7 @@ h1{font-size:18px;margin-bottom:4px}
         <h2>Diese Disc hat ein <span>Extraleben</span> bekommen.</h2>
         <p>Gebraucht, aber nicht verbraucht – sorgfältig geprüft und gereinigt.</p>
       </div>
+      <div class="thanks">Danke, dass du gebraucht kaufst!</div>
       <div class="qrs" id="qrs"></div>
       <div class="bottom">
         <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
@@ -147,6 +156,7 @@ h1{font-size:18px;margin-bottom:4px}
     <!-- Vorderseite (rechts) -->
     <div class="panel front">
       <div class="frame"></div>
+      <div class="edition ribbon" id="edition"><span data-px="heartCream"></span><span>EXTRALEBEN EDITION</span><span data-px="heartCream"></span></div>
       <div class="badge" id="logoArea"></div>
       <div class="brand">BONUS<span>LIFE</span></div>
       <div class="titlefield" id="titleOut"></div>
@@ -201,6 +211,13 @@ function plusOne(cx,cy,s){
   put(plus,0,.5);put(one,8,0);return r;
 }
 
+// Rotes Band mit gestuften Schwalbenschwanz-Enden (84 × 12 mm)
+function ribbonSVG(){
+  const W=84,pts=[[W,0],[W,2],[W-1.5,2],[W-1.5,4],[W-3,4],[W-3,8],[W-1.5,8],[W-1.5,10],[W,10],[W,12],
+    [0,12],[0,10],[1.5,10],[1.5,8],[3,8],[3,4],[1.5,4],[1.5,2],[0,2],[0,0]];
+  return `<svg class="bg" viewBox="0 0 ${W} 12" preserveAspectRatio="none" shape-rendering="crispEdges"><polygon fill="${RED}" points="${pts.map(p=>p.join(',')).join(' ')}"/></svg>`;
+}
+
 // Pixel-Verlauf (geordnetes Dithering) als Abschluss der Rückseite
 function drawDither(){
   const W=110,H=8,B=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];let r='';
@@ -214,7 +231,7 @@ function lastSeg(url){const m=url.replace(/\/+$/,'').match(/([^\/?#]+)(?:[?#].*)
 
 function renderQRs(){
   const shop=$('url').value.trim(), ig=$('insta').value.trim(), box=$('qrs');
-  const shopLbl=`<div class="lbl">${pxSVG('bag')}<span>eBay-Shop <small>${esc(lastSeg(shop))}</small></span></div>`;
+  const shopLbl=`<div class="lbl">${pxSVG('bag')}<span>eBay-Shop <small>${esc(shop.replace(/^https?:\/\/(www\.)?/,'').replace(/\/+$/,''))}</small></span></div>`;
   if(shop&&!ig){
     box.className='qrs single';
     box.innerHTML=`<div class="qrcard"><div class="qr">${qrSVG(shop)}</div><div class="txt">
@@ -242,6 +259,10 @@ function render(){
   $('logoArea').innerHTML=logoData?'<img src="'+logoData+'" alt="Bonuslife Logo">':badgeSVG();
   const t=$('title').value.trim();
   $('titleOut').innerHTML=t?'<div class="t">'+esc(t)+'</div>':'';
+  const hd=$('head').value,ed=$('edition');
+  ed.hidden=hd==='none';ed.className='edition '+(hd==='none'?'':hd);
+  ed.querySelector('svg.bg')?.remove();
+  if(hd==='ribbon')ed.insertAdjacentHTML('afterbegin',ribbonSVG());
   renderQRs();
   drawMarks();
 }
