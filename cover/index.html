@@ -47,7 +47,8 @@ h1{font-size:18px;margin-bottom:4px}
 .spine .sp{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:flex;align-items:center;gap:4mm;font-size:min(3.2mm,calc(var(--spine)*.5))}
 .spine .sp b{font-family:"Press Start 2P",monospace;font-size:.85em;font-weight:400}
 .spine .sp b span{color:#e25466}
-.spine .sp svg{width:1.1em;height:1.1em;transform:rotate(90deg)}
+.spine .sp .sh{font-style:normal;color:#e25466;transform:rotate(90deg)}
+.spine .sp .sl{font-size:.7em}
 
 /* Schnitt- und Falzmarken (außerhalb des Covers) */
 .marks{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);width:calc(var(--panel-w)*2 + var(--spine));pointer-events:none}
@@ -59,31 +60,32 @@ h1{font-size:18px;margin-bottom:4px}
 
 /* Vorderseite */
 .front{align-items:center;text-align:center}
-.badge{width:52mm;height:52mm;margin-top:2mm}
+.badge{width:78mm;height:78mm;margin-top:6mm}
 .badge img{width:100%;height:100%;object-fit:contain}
-.brand{font-family:"Press Start 2P",monospace;font-size:5.4mm;margin-top:3mm;letter-spacing:.3mm}
+.brand{font-family:"Press Start 2P",monospace;font-size:7mm;margin-top:5mm;letter-spacing:.4mm}
 .brand span{color:var(--accent)}
-.titlebox{align-self:stretch;margin:auto 0;border:.5mm solid var(--fg);border-radius:2mm;padding:4mm 4mm 3mm;position:relative;min-height:34mm;display:flex;flex-direction:column;justify-content:center;background:var(--field)}
-.titlebox .lbl{position:absolute;top:-2.4mm;left:4mm;background:var(--bg);padding:0 1.5mm;font-family:"Press Start 2P",monospace;font-size:2.2mm;color:var(--accent)}
-.titlebox .t{font-weight:800;font-size:7.5mm;line-height:1.1;word-break:break-word}
-.titlebox .meta{font-size:3.4mm;color:var(--muted);margin-top:2mm}
+.titlefield{align-self:stretch;margin-top:auto;margin-bottom:5mm;padding:0 2mm}
+.titlefield .line{height:10mm;border-bottom:.35mm solid var(--fg);opacity:.55}
+.titlefield .t{font-weight:800;font-size:7.5mm;line-height:1.15;word-break:break-word;padding-bottom:2mm;border-bottom:.35mm solid var(--fg)}
 .line{border-bottom:.3mm dashed var(--muted);height:9mm}
 .formats{display:flex;gap:5mm;font-size:3.4mm;font-weight:600;margin-bottom:1mm}
 .formats span::before{content:"";display:inline-block;width:3mm;height:3mm;border:.35mm solid var(--fg);border-radius:.6mm;margin-right:1.4mm;vertical-align:-.4mm}
 .formats span.on::before{background:var(--accent);border-color:var(--accent)}
 
 /* Rückseite */
-.back h2{font-family:"Press Start 2P",monospace;font-size:3.6mm;line-height:1.6;font-weight:400;margin:2mm 0 4mm}
+.back{justify-content:space-between}
+.back h2{font-family:"Press Start 2P",monospace;font-size:4.6mm;line-height:1.6;font-weight:400;margin-top:2mm}
 .back h2 span{color:var(--accent)}
-.back p{font-size:3.5mm;line-height:1.5;margin-bottom:3mm}
-.checks{list-style:none;font-size:3.5mm;line-height:1.8;margin-bottom:4mm}
+.back p{font-size:3.9mm;line-height:1.5}
+.checks{list-style:none;font-size:3.9mm;line-height:1.8}
 .checks li::before{content:"♥";color:var(--accent);margin-right:2mm}
-.slogan{font-family:"Press Start 2P",monospace;font-size:2.8mm;line-height:1.6}
+.slogan{font-family:"Press Start 2P",monospace;font-size:4mm;line-height:1.7;text-align:center;border-top:.4mm dashed var(--muted);border-bottom:.4mm dashed var(--muted);padding:3mm 0}
+.cond .lbl2,.notes .lbl2{font-family:"Press Start 2P",monospace;font-size:2.4mm;color:var(--accent);margin-bottom:2mm}
+.cond .opts{display:flex;flex-wrap:wrap;gap:2mm 5mm;font-size:3.5mm;font-weight:600}
+.cond .opts span::before{content:"";display:inline-block;width:3mm;height:3mm;border:.35mm solid var(--fg);border-radius:.6mm;margin-right:1.4mm;vertical-align:-.4mm}
 .slogan span{color:var(--accent)}
-.notes{margin-top:auto}
-.notes .lbl2{font-family:"Press Start 2P",monospace;font-size:2.2mm;color:var(--accent);margin-bottom:1mm}
 .notes .line{height:7.5mm}
-.foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:5mm;gap:4mm}
+.foot{display:flex;justify-content:space-between;align-items:flex-end;gap:4mm}
 .foot .small{font-size:2.8mm;color:var(--muted);line-height:1.5}
 .foot .small b{color:var(--fg)}
 .qr{width:20mm;height:20mm;background:#fff;padding:1.2mm;border-radius:1mm;flex:none;border:.4mm solid var(--navy)}
@@ -105,7 +107,6 @@ h1{font-size:18px;margin-bottom:4px}
   <p class="hint">Titel leer lassen = Feld zum Beschriften von Hand. Drucken auf A4 quer, <b>Skalierung 100 % / „Tatsächliche Größe“</b>, Ränder „Keine“, Hintergrundgrafiken an. Schnittmarken außen, kurze Striche oben/unten = Falz am Rücken.</p>
   <div class="controls">
     <label>Titel (optional)<input id="title" placeholder="leer = handschriftlich"></label>
-    <label>Zusatz (Jahr, FSK, …)<input id="meta" placeholder="z. B. 2011 · FSK 12"></label>
     <label>Format ankreuzen<select id="fmt"><option value="">keins (von Hand)</option><option>DVD</option><option>Blu-ray</option><option>CD</option></select></label>
     <label>Original-Logo (PNG/SVG, optional)<input type="file" id="logo" accept="image/*"></label>
     <label>Shop-Link für QR-Code<input id="url" placeholder="https://…"></label>
@@ -126,24 +127,22 @@ h1{font-size:18px;margin-bottom:4px}
       <h2>Diese Disc hat ein <span>Extraleben</span> bekommen.</h2>
       <p>Statt im Regal zu verstauben, geht sie jetzt in die nächste Runde – bei dir.</p>
       <ul class="checks"><li>Geprüft &amp; abgespielt</li><li>Gereinigt</li><li>Sicher verpackt</li></ul>
-      <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
-      <div class="notes"><div class="lbl2">NOTIZ</div><div class="line"></div><div class="line"></div></div>
+      <div class="cond"><div class="lbl2">ZUSTAND</div><div class="opts"><span>Wie neu</span><span>Sehr gut</span><span>Gut</span><span>Gebraucht</span></div></div>
+      <div class="notes"><div class="lbl2">NOTIZ</div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+      <div class="slogan">USED ONCE.<br><span>LOVED TWICE.</span></div>
       <div class="foot">
         <div class="small"><b>BONUSLIFE</b><br>Second-Hand Filme, Musik &amp; Games<br>Hülle ohne Originalcover</div>
         <div class="qr" id="qr" hidden></div>
       </div>
     </div>
     <!-- Rücken -->
-    <div class="spine"><div class="sp"><b>BONUS<span>LIFE</span></b><span id="spTitle"></span></div></div>
+    <div class="spine"><div class="sp"><b>BONUS<span>LIFE</span></b><i class="sh">♥</i><b class="sl">USED ONCE. <span>LOVED TWICE.</span></b></div></div>
     <!-- Vorderseite (rechts) -->
     <div class="panel front">
       <div class="frame"></div>
       <div class="badge" id="logoArea"></div>
       <div class="brand">BONUS<span>LIFE</span></div>
-      <div class="titlebox">
-        <div class="lbl">TITEL</div>
-        <div id="titleOut"></div>
-      </div>
+      <div class="titlefield" id="titleOut"></div>
       <div class="formats" id="formats"><span>DVD</span><span>Blu-ray</span><span>CD</span></div>
     </div>
   </div>
@@ -158,16 +157,16 @@ const $=id=>document.getElementById(id);
 // Wird durch ein hochgeladenes Original-Logo ersetzt.
 function badgeSVG(){
   const rows=[[2,4,8,10],[1,5,7,11],[0,12],[0,12],[0,12],[1,11],[2,10],[3,9],[4,8],[5,7],[6,6]];
-  const u=10,ox=35,oy=28,o=2.4;let navy='',red='';
+  const u=9,ox=41.5,oy=44,o=2.2;let navy='',red='';
   rows.forEach((r,y)=>{for(let i=0;i<r.length;i+=2){const x=ox+r[i]*u,w=(r[i+1]-r[i]+1)*u,yy=oy+y*u;
     navy+=`<rect x="${x-o}" y="${yy-o}" width="${w+2*o}" height="${u+2*o}"/>`;
     red+=`<rect x="${x}" y="${yy}" width="${w}" height="${u+.5}"/>`;}});
   return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
   <circle cx="100" cy="100" r="95" fill="#f4ead2" stroke="#13204a" stroke-width="7"/>
   <g fill="#13204a">${navy}</g><g fill="#9c1b2b">${red}</g>
-  <text x="102" y="84" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="22" fill="#f4ead2">+1</text>
+  <text x="101.5" y="93" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="19" fill="#f4ead2">+1</text>
   <defs><path id="arc" d="M 16 100 A 84 84 0 0 0 184 100"/></defs>
-  <text font-family="'Press Start 2P',monospace" font-size="9.6" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="#13204a">USED ONCE. </tspan><tspan fill="#9c1b2b">LOVED TWICE.</tspan></textPath></text>
+  <text font-family="'Press Start 2P',monospace" font-size="8.8" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="#13204a">USED ONCE. </tspan><tspan fill="#9c1b2b">LOVED TWICE.</tspan></textPath></text>
 </svg>`;
 }
 
@@ -187,10 +186,8 @@ function render(){
 
   $('logoArea').innerHTML=logoData?'<img src="'+logoData+'" alt="Bonuslife Logo">':badgeSVG();
 
-  const t=$('title').value.trim(), m=$('meta').value.trim();
-  $('titleOut').innerHTML=t?'<div class="t">'+esc(t)+'</div>'+(m?'<div class="meta">'+esc(m)+'</div>':'')
-    :'<div class="line"></div><div class="line"></div>';
-  $('spTitle').textContent=t;
+  const t=$('title').value.trim();
+  $('titleOut').innerHTML=t?'<div class="t">'+esc(t)+'</div>':'<div class="line"></div><div class="line"></div>';
 
   const f=$('fmt').value;
   [...$('formats').children].forEach(s=>s.classList.toggle('on',s.textContent===f));
