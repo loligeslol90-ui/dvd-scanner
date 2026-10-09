@@ -64,27 +64,19 @@ h1{font-size:18px;margin-bottom:4px}
 
 /* Vorderseite */
 .front{align-items:center;text-align:center}
-.badge{width:40mm;height:40mm;margin-top:4mm}
+.badge{width:52mm;height:52mm;margin-top:auto}
 .badge img,.badge svg{width:100%;height:100%;object-fit:contain;display:block}
-.brand{font-family:"Press Start 2P",monospace;font-size:5.4mm;margin-top:4mm;letter-spacing:.4mm}
+.brand{font-family:"Press Start 2P",monospace;font-size:6mm;margin-top:6mm;letter-spacing:.4mm}
 .brand span{color:var(--accent)}
-.titlefield{align-self:stretch;margin-top:6mm;height:70mm;border:.5mm solid var(--fg);border-radius:2.5mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:4mm}
-.titlefield .t{font-weight:800;font-size:7.5mm;line-height:1.15;word-break:break-word}
-.lives{margin-top:auto;margin-bottom:2mm;display:flex;gap:2mm;align-items:center}
-.lives .px{width:5.5mm}
-.lives .plus{font-family:"Press Start 2P",monospace;font-size:3mm;color:var(--accent);margin-left:1mm}
+.titlefield{align-self:stretch;margin-top:12mm;height:14mm;border:.5mm solid var(--fg);border-radius:2mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:0 4mm;overflow:hidden}
+.titlefield .t{font-weight:800;font-size:5.2mm;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Rückseite */
 .head{position:relative;background:var(--navy);color:var(--cream);border-radius:2mm;padding:5mm 5mm 4.5mm}
 .head h2{font-family:"Press Start 2P",monospace;font-size:4.2mm;line-height:1.7;font-weight:400}
 .head h2 span{background:var(--red);padding:0 1mm;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .head p{font-size:3.5mm;line-height:1.45;margin-top:2.5mm;opacity:.88}
-.checks{display:flex;justify-content:space-between;margin-top:5mm;padding:0 1mm}
-.checks span{display:flex;align-items:center;gap:1.6mm;font-size:3.4mm;font-weight:600}
-.checks .px{width:3.2mm}
-.range{margin-top:4.5mm;font-size:3.4mm;line-height:1.45;padding:0 1mm}
-.range b{color:var(--accent)}
-.qrs{margin:7mm 0 auto;display:flex;gap:6mm;justify-content:center}
+.qrs{margin:auto 0;display:flex;gap:6mm;justify-content:center}
 .qrcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2mm;max-width:52mm}
 .qrcard .k{font-family:"Press Start 2P",monospace;font-size:2.5mm;line-height:1.5;color:var(--accent)}
 .qr{width:28mm;height:28mm;background:#fff;padding:1.6mm;border-radius:1.6mm;border:.5mm solid var(--navy)}
@@ -94,11 +86,11 @@ h1{font-size:18px;margin-bottom:4px}
 .qrcard .lbl small{font-weight:400;color:var(--muted)}
 /* nur ein Code: quer, mit Text daneben */
 .qrs.single .qrcard{flex-direction:row;max-width:none;text-align:left;gap:5mm}
-.qrs.single .qr{width:32mm;height:32mm;flex:none}
+.qrs.single .qr{width:36mm;height:36mm;flex:none}
 .qrs.single .txt{display:flex;flex-direction:column;gap:2.2mm;align-items:flex-start}
 .qrs.single .k{font-size:3mm}
 .qrcard .cta{font-size:3.3mm;line-height:1.4}
-.bottom{text-align:center}
+.bottom{text-align:center;align-self:stretch;margin-top:auto}
 .slogan{font-family:"Press Start 2P",monospace;font-size:2.8mm;margin-bottom:2.5mm}
 .slogan span{color:var(--accent)}
 .dither{display:block;width:100%;height:8mm}
@@ -138,14 +130,12 @@ h1{font-size:18px;margin-bottom:4px}
       <div class="frame"></div>
       <div class="head">
         <h2>Diese Disc hat ein <span>Extraleben</span> bekommen.</h2>
-        <p>Gebraucht, aber nicht verbraucht – bereit für die nächste Runde.</p>
+        <p>Gebraucht, aber nicht verbraucht – sorgfältig geprüft und gereinigt.</p>
       </div>
-      <div class="checks"><span data-px="check">Geprüft</span><span data-px="check">Gereinigt</span><span data-px="check">Bereit für Runde 2</span></div>
-      <div class="range"><b>Nicht nur Discs:</b> Vinyl, Comics, Games, Retro-Schätze &amp; mehr – alles aus zweiter Hand.</div>
       <div class="qrs" id="qrs"></div>
       <div class="bottom">
         <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
-        <svg class="dither" id="dither" preserveAspectRatio="none"></svg>
+        <svg class="dither" data-dither preserveAspectRatio="none"></svg>
       </div>
     </div>
     <!-- Rücken -->
@@ -160,7 +150,10 @@ h1{font-size:18px;margin-bottom:4px}
       <div class="badge" id="logoArea"></div>
       <div class="brand">BONUS<span>LIFE</span></div>
       <div class="titlefield" id="titleOut"></div>
-      <div class="lives"><span data-px="heart"></span><span data-px="heart"></span><span data-px="heart"></span><span class="plus">+1</span></div>
+      <div class="bottom">
+        <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
+        <svg class="dither" data-dither preserveAspectRatio="none"></svg>
+      </div>
     </div>
   </div>
   <div class="marks" id="marks"></div>
@@ -174,9 +167,7 @@ const NAVY='#13204a',RED='#9c1b2b',CREAM='#f4ead2';
 // Pixel-Grafiken (# = gefüllt)
 const HEART=['.##.##.','#######','#######','.#####.','..###..','...#...'];
 const PX={
-  heart:{c:RED,g:HEART},
   heartCream:{c:CREAM,g:HEART},
-  check:{c:RED,g:['......#','.....##','#...##.','##.##..','.###...','..#....']},
   bag:{c:NAVY,g:['....####....','...#....#...','...#....#...','.##########.','.#........#.','.#........#.','.#........#.','.#........#.','.#........#.','.#........#.','.##########.']},
   cam:{c:NAVY,g:['.##########.','#..........#','#.......##.#','#...####...#','#..#....#..#','#..#....#..#','#..#....#..#','#..#....#..#','#...####...#','#..........#','.##########.']}
 };
@@ -187,19 +178,17 @@ function pxSVG(name){
 }
 function fillPx(root){root.querySelectorAll('[data-px]').forEach(el=>el.insertAdjacentHTML('afterbegin',pxSVG(el.dataset.px)))}
 
-// Nachbau des Bonuslife-Logos als SVG. Wird durch ein hochgeladenes Original-Logo ersetzt.
+// Bonuslife-Logo: Ring + Pixel-Herz mit "+1" (ohne Bogentext). Wird durch ein hochgeladenes Logo ersetzt.
 function badgeSVG(){
   const rows=[[2,4,8,10],[1,5,7,11],[0,12],[0,12],[0,12],[1,11],[2,10],[3,9],[4,8],[5,7],[6,6]];
-  const u=9,ox=41.5,oy=44,o=2.2;let navy='',red='';
+  const u=10,ox=35,oy=50,o=2.4;let navy='',red='';
   rows.forEach((r,y)=>{for(let i=0;i<r.length;i+=2){const x=ox+r[i]*u,w=(r[i+1]-r[i]+1)*u,yy=oy+y*u;
     navy+=`<rect x="${x-o}" y="${yy-o}" width="${w+2*o}" height="${u+2*o}"/>`;
     red+=`<rect x="${x}" y="${yy}" width="${w}" height="${u+.5}"/>`;}});
   return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-  <circle cx="100" cy="100" r="95" fill="${CREAM}" stroke="${NAVY}" stroke-width="7"/>
+  <circle cx="100" cy="100" r="94" fill="${CREAM}" stroke="${NAVY}" stroke-width="9"/>
   <g fill="${NAVY}">${navy}</g><g fill="${RED}">${red}</g>
-  <g fill="${CREAM}">${plusOne(100,84.5,3.24)}</g>
-  <defs><path id="arc" d="M 16 100 A 84 84 0 0 0 184 100"/></defs>
-  <text font-family="'Press Start 2P',monospace" font-size="8.8" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="${NAVY}">USED ONCE. </tspan><tspan fill="${RED}">LOVED TWICE.</tspan></textPath></text>
+  <g fill="${CREAM}">${plusOne(100,95,3.6)}</g>
 </svg>`;
 }
 
@@ -216,8 +205,8 @@ function plusOne(cx,cy,s){
 function drawDither(){
   const W=110,H=8,B=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];let r='';
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(B[y%4][x%4]/16<(y+1)/H*.95)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}
-  $('dither').setAttribute('viewBox',`0 0 ${W} ${H}`);
-  $('dither').innerHTML=`<g fill="${NAVY}" shape-rendering="crispEdges">${r}</g>`;
+  document.querySelectorAll('[data-dither]').forEach(d=>{d.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    d.innerHTML=`<g fill="${NAVY}" shape-rendering="crispEdges">${r}</g>`;});
 }
 
 function qrSVG(url){const q=qrcode(0,'M');q.addData(url);q.make();return q.createSvgTag(4,0).replace(/fill="black"|fill="#000000"/g,`fill="${NAVY}"`)}
@@ -229,13 +218,13 @@ function renderQRs(){
   if(shop&&!ig){
     box.className='qrs single';
     box.innerHTML=`<div class="qrcard"><div class="qr">${qrSVG(shop)}</div><div class="txt">
-      <div class="k">NOCH EIN LEBEN ÜBRIG?</div>
-      <div class="cta">Scannen &amp; weiterstöbern – geprüft, gereinigt, mit Extraleben.</div>${shopLbl}</div></div>`;
+      <div class="k">BESUCH UNSEREN SHOP</div>
+      <div class="cta">Code scannen und stöbern: Filme, Musik, Games, Comics, Vinyl &amp; Sammlerstücke aus zweiter Hand.</div>${shopLbl}</div></div>`;
     return;
   }
   box.className='qrs';
-  box.innerHTML=(shop?`<div class="qrcard"><div class="k">NOCH EIN LEBEN<br>ÜBRIG?</div><div class="qr">${qrSVG(shop)}</div>${shopLbl}</div>`:'')+
-    (ig?`<div class="qrcard"><div class="k">PLAYER 2<br>GESUCHT!</div><div class="qr">${qrSVG(ig)}</div><div class="lbl">${pxSVG('cam')}<span>Instagram <small>@${esc(lastSeg(ig))}</small></span></div></div>`:'');
+  box.innerHTML=(shop?`<div class="qrcard"><div class="k">UNSER<br>EBAY-SHOP</div><div class="qr">${qrSVG(shop)}</div>${shopLbl}</div>`:'')+
+    (ig?`<div class="qrcard"><div class="k">NEUZUGÄNGE AUF<br>INSTAGRAM</div><div class="qr">${qrSVG(ig)}</div><div class="lbl">${pxSVG('cam')}<span>Instagram <small>@${esc(lastSeg(ig))}</small></span></div></div>`:'');
 }
 
 let logoData=null;
