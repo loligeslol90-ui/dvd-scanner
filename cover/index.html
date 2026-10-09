@@ -55,7 +55,7 @@ h1{font-size:18px;margin-bottom:4px}
 .spine .cap .px{width:min(5mm,calc(var(--spine)*.72))}
 .spine .name{flex:1;display:flex;align-items:center;justify-content:center}
 .spine .name b{writing-mode:vertical-rl;transform:rotate(180deg);font-family:"Press Start 2P",monospace;font-weight:400;font-size:min(2.8mm,calc(var(--spine)*.42));letter-spacing:.3mm;white-space:nowrap}
-.spine .write{width:calc(100% - 1.6mm);height:62mm;background:var(--cream);border-radius:.6mm;margin-bottom:6mm}
+.spine .write{width:calc(100% - 1.6mm);height:62mm;background:var(--cream-d);border-radius:.6mm;margin-bottom:6mm}
 
 /* Schnitt- und Falzmarken (außerhalb des Beschnitts) */
 .marks{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);width:calc(var(--panel-w)*2 + var(--spine));pointer-events:none}
@@ -64,11 +64,11 @@ h1{font-size:18px;margin-bottom:4px}
 
 /* Vorderseite */
 .front{align-items:center;text-align:center}
-.badge{width:46mm;height:46mm;margin-top:5mm}
+.badge{width:40mm;height:40mm;margin-top:4mm}
 .badge img,.badge svg{width:100%;height:100%;object-fit:contain;display:block}
-.brand{font-family:"Press Start 2P",monospace;font-size:5.6mm;margin-top:3.5mm;letter-spacing:.4mm}
+.brand{font-family:"Press Start 2P",monospace;font-size:5.4mm;margin-top:4mm;letter-spacing:.4mm}
 .brand span{color:var(--accent)}
-.titlefield{align-self:stretch;margin-top:8mm;height:50mm;border:.5mm solid var(--fg);border-radius:2.5mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:4mm}
+.titlefield{align-self:stretch;margin-top:6mm;height:70mm;border:.5mm solid var(--fg);border-radius:2.5mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:4mm}
 .titlefield .t{font-weight:800;font-size:7.5mm;line-height:1.15;word-break:break-word}
 .lives{margin-top:auto;margin-bottom:2mm;display:flex;gap:2mm;align-items:center}
 .lives .px{width:5.5mm}
@@ -82,7 +82,9 @@ h1{font-size:18px;margin-bottom:4px}
 .checks{display:flex;justify-content:space-between;margin-top:5mm;padding:0 1mm}
 .checks span{display:flex;align-items:center;gap:1.6mm;font-size:3.4mm;font-weight:600}
 .checks .px{width:3.2mm}
-.qrs{margin:auto 0;display:flex;gap:6mm;justify-content:center}
+.range{margin-top:4.5mm;font-size:3.4mm;line-height:1.45;padding:0 1mm}
+.range b{color:var(--accent)}
+.qrs{margin:7mm 0 auto;display:flex;gap:6mm;justify-content:center}
 .qrcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2mm;max-width:52mm}
 .qrcard .k{font-family:"Press Start 2P",monospace;font-size:2.5mm;line-height:1.5;color:var(--accent)}
 .qr{width:28mm;height:28mm;background:#fff;padding:1.6mm;border-radius:1.6mm;border:.5mm solid var(--navy)}
@@ -139,6 +141,7 @@ h1{font-size:18px;margin-bottom:4px}
         <p>Gebraucht, aber nicht verbraucht – bereit für die nächste Runde.</p>
       </div>
       <div class="checks"><span data-px="check">Geprüft</span><span data-px="check">Gereinigt</span><span data-px="check">Bereit für Runde 2</span></div>
+      <div class="range"><b>Nicht nur Discs:</b> Vinyl, Comics, Games, Retro-Schätze &amp; mehr – alles aus zweiter Hand.</div>
       <div class="qrs" id="qrs"></div>
       <div class="bottom">
         <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
@@ -194,10 +197,19 @@ function badgeSVG(){
   return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
   <circle cx="100" cy="100" r="95" fill="${CREAM}" stroke="${NAVY}" stroke-width="7"/>
   <g fill="${NAVY}">${navy}</g><g fill="${RED}">${red}</g>
-  <text x="101.5" y="93" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="19" fill="${CREAM}">+1</text>
+  <g fill="${CREAM}">${plusOne(100,84.5,3.24)}</g>
   <defs><path id="arc" d="M 16 100 A 84 84 0 0 0 184 100"/></defs>
   <text font-family="'Press Start 2P',monospace" font-size="8.8" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="${NAVY}">USED ONCE. </tspan><tspan fill="${RED}">LOVED TWICE.</tspan></textPath></text>
 </svg>`;
+}
+
+// "+1" als Pixel (wie Profilbild), cx/cy = Mittelpunkt, s = Pixelgröße
+function plusOne(cx,cy,s){
+  const one=['..##..','.###..','..##..','..##..','..##..','..##..','######'];
+  const plus=['..##..','..##..','######','######','..##..','..##..'];
+  const ox=cx-7*s,oy=cy-3.5*s;let r='';
+  const put=(g,dx,dy)=>g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${ox+(dx+x)*s}" y="${oy+(dy+y)*s}" width="${s+.1}" height="${s+.1}"/>`}));
+  put(plus,0,.5);put(one,8,0);return r;
 }
 
 // Pixel-Verlauf (geordnetes Dithering) als Abschluss der Rückseite
@@ -218,7 +230,7 @@ function renderQRs(){
     box.className='qrs single';
     box.innerHTML=`<div class="qrcard"><div class="qr">${qrSVG(shop)}</div><div class="txt">
       <div class="k">NOCH EIN LEBEN ÜBRIG?</div>
-      <div class="cta">Scannen &amp; weiterstöbern – Filme, Musik, Games, Comics &amp; mehr aus zweiter Hand.</div>${shopLbl}</div></div>`;
+      <div class="cta">Scannen &amp; weiterstöbern – geprüft, gereinigt, mit Extraleben.</div>${shopLbl}</div></div>`;
     return;
   }
   box.className='qrs';

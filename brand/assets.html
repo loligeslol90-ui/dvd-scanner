@@ -21,13 +21,13 @@ svg{display:block}
 
 /* Banner 1280×288 (eBay), 2× gerendert */
 .banner{width:1280px;height:288px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:56px}
-.banner .badge{width:212px;height:212px}
+.banner .badge{width:190px;height:190px}
 .banner .mid{display:flex;flex-direction:column;align-items:center;gap:18px}
 .wm{font-family:"Press Start 2P",monospace;font-size:58px;letter-spacing:4px;color:var(--navy)}
 .wm span{color:var(--red)}
 .sl{font-family:"Press Start 2P",monospace;font-size:17px;letter-spacing:1px;color:var(--navy)}
 .sl span{color:var(--red)}
-.cat{font:600 17px Inter,sans-serif;color:#5b6380;letter-spacing:.3px}
+.cat{font:600 21px Inter,sans-serif;color:rgba(19,32,74,.8);letter-spacing:.3px}
 .lives{display:flex;gap:10px;align-items:center}
 .lives svg{width:34px}
 .lives b{font-family:"Press Start 2P",monospace;font-weight:400;font-size:16px;color:var(--red);margin-left:6px}
@@ -35,13 +35,15 @@ svg{display:block}
 .banner .dither.top{top:0;bottom:auto;transform:scaleY(-1)}
 
 /* Instagram/Facebook-Titelbild 1500×500 */
-.wide{width:1500px;height:500px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:80px}
-.wide .badge{width:340px;height:340px}
+.wide{width:1500px;height:500px;background:var(--cream);display:flex;align-items:center;justify-content:center;gap:110px;padding-left:120px}
+.wide .badge{width:300px;height:300px}
 .wide .wm{font-size:76px}
 .wide .sl{font-size:22px}
 .wide .cat{font-size:22px}
 .wide .mid{display:flex;flex-direction:column;align-items:flex-start;gap:26px}
 .wide .dither{position:absolute;left:0;right:0;bottom:0;height:36px}
+.wide .dither.top{top:0;bottom:auto;transform:scaleY(-1)}
+.wide .cat{font-size:24px}
 </style>
 </head>
 <body>
@@ -50,25 +52,28 @@ svg{display:block}
 <div><div class="cap">eBay-Banner 1280×288</div>
   <div class="asset banner" id="banner">
     <svg class="dither top" data-dither="1280"></svg>
-    <div class="badge" data-badge></div>
+    <div class="badge" data-ring></div>
     <div class="mid">
       <div class="wm">BONUS<span>LIFE</span></div>
       <div class="sl">USED ONCE. <span>LOVED TWICE.</span></div>
-      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Retro &amp; mehr – aus zweiter Hand</div>
+      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Sammlerstücke</div>
     </div>
     <div class="lives"><i data-heart></i><i data-heart></i><i data-heart></i><b>+1</b></div>
     <svg class="dither" data-dither="1280"></svg>
   </div>
 </div>
+<div><div class="cap">Logo ohne Bogentext (farbig) und Stempel (einfarbig Navy)</div>
+  <div style="display:flex;gap:24px"><div class="asset" id="ringColor" style="width:800px;height:800px" data-ring></div><div class="asset" id="ringStamp" style="width:800px;height:800px;background:#fff" data-stamp></div></div></div>
 <div><div class="cap">Breites Titelbild 1500×500 (z. B. Facebook, Linktree, Website)</div>
   <div class="asset wide" id="wide">
-    <div class="badge" data-badge></div>
+    <svg class="dither top" data-dither="1500"></svg>
     <div class="mid">
       <div class="wm">BONUS<span>LIFE</span></div>
       <div class="sl">USED ONCE. <span>LOVED TWICE.</span></div>
-      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Retro &amp; mehr</div>
+      <div class="cat">Filme · Musik · Games · Comics · Vinyl · Sammlerstücke</div>
       <div class="lives"><i data-heart></i><i data-heart></i><i data-heart></i><b>+1</b></div>
     </div>
+    <div class="badge" data-ring></div>
     <svg class="dither" data-dither="1500"></svg>
   </div>
 </div>
@@ -106,9 +111,17 @@ function badgeSVG(){
   return `<svg viewBox="0 0 200 200" shape-rendering="crispEdges">
   <circle cx="100" cy="100" r="95" fill="${CREAM}" stroke="${NAVY}" stroke-width="7"/>
   <g fill="${NAVY}">${navy}</g><g fill="${RED}">${red}</g>
-  <text x="101.5" y="93" text-anchor="middle" font-family="'Press Start 2P',monospace" font-size="19" fill="${CREAM}">+1</text>
+  <g fill="${CREAM}">${plusOne(100,84.5,3.24)}</g>
   <defs><path id="arc" d="M 16 100 A 84 84 0 0 0 184 100"/></defs>
   <text font-family="'Press Start 2P',monospace" font-size="8.8" letter-spacing=".2" shape-rendering="auto"><textPath href="#arc" startOffset="50%" text-anchor="middle"><tspan fill="${NAVY}">USED ONCE. </tspan><tspan fill="${RED}">LOVED TWICE.</tspan></textPath></text></svg>`;
+}
+// Ring + Herz ohne Bogentext: für Stempel und kleine Größen. mono = einfarbig
+function ringLogo(mono){
+  const ink=mono||NAVY,heart=mono||RED,{navy,red}=heartRects(10,35,50,2.4);
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <circle cx="100" cy="100" r="94" fill="${mono?'none':CREAM}" stroke="${ink}" stroke-width="9"/>
+  <g fill="${ink}">${navy}</g><g fill="${heart}">${red}</g>
+  <g fill="${mono?'#ffffff':CREAM}">${plusOne(100,95,3.6)}</g></svg>`;
 }
 function smallHeart(){const g=['.##.##.','#######','#######','.#####.','..###..','...#...'];let r='';
   g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}));
@@ -123,6 +136,8 @@ function render(){
   document.getElementById('profileCream').innerHTML=heartMark(NAVY);
   document.getElementById('profileNavy').innerHTML=heartMark(CREAM);
   document.querySelectorAll('[data-badge]').forEach(e=>e.innerHTML=badgeSVG());
+  document.querySelectorAll('[data-ring]').forEach(e=>e.innerHTML=ringLogo());
+  document.querySelectorAll('[data-stamp]').forEach(e=>e.innerHTML=ringLogo(NAVY));
   document.querySelectorAll('[data-heart]').forEach(e=>e.innerHTML=smallHeart());
   document.querySelectorAll('[data-dither]').forEach(e=>dither(e,+e.dataset.dither));
 }
