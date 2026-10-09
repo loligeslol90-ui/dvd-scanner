@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonus Live Cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --panel-w:130mm;   /* Breite Vorder-/Rückseite */
+  --spine:7mm;       /* Rückenbreite */
+  --h:183mm;         /* Höhe */
+  --bg:#12122a; --fg:#ffffff; --accent:#ff3b5c; --accent2:#3ee07a; --muted:#9aa0c3; --field:rgba(255,255,255,.08);
+  --ui-bg:#f4f5f8; --ui-fg:#1b1d2a; --ui-card:#ffffff; --ui-line:#d9dbe4;
+}
+.light{ --bg:#ffffff; --fg:#14142b; --muted:#5a5f7a; --field:rgba(20,20,43,.05); }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --ui-bg:#14151c; --ui-fg:#e8e9ef; --ui-card:#1e2029; --ui-line:#33364a; }
+}
+:root[data-theme="dark"]{ --ui-bg:#14151c; --ui-fg:#e8e9ef; --ui-card:#1e2029; --ui-line:#33364a; }
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-fg);padding:16px}
+h1{font-size:18px;margin-bottom:4px}
+.hint{font-size:13px;opacity:.75;margin-bottom:12px;max-width:900px;line-height:1.45}
+
+/* ---------- Steuerung ---------- */
+.controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;background:var(--ui-card);border:1px solid var(--ui-line);border-radius:12px;padding:14px;margin-bottom:16px;max-width:1123px}
+.controls label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600}
+.controls input,.controls select{font:inherit;font-weight:400;padding:7px 9px;border:1px solid var(--ui-line);border-radius:8px;background:var(--ui-bg);color:var(--ui-fg);min-width:0}
+.controls .row{display:flex;gap:8px;align-items:end}
+.controls button{font:inherit;font-weight:700;padding:9px 14px;border:0;border-radius:8px;background:#ff3b5c;color:#fff;cursor:pointer}
+.controls button.sec{background:var(--ui-line);color:var(--ui-fg)}
+
+/* ---------- Druckbogen A4 quer ---------- */
+.scroll{overflow-x:auto;padding-bottom:8px}
+.sheet{width:297mm;height:210mm;background:#fff;position:relative;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+.cover{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);
+  width:calc(var(--panel-w)*2 + var(--spine));display:flex;background:var(--bg);color:var(--fg);overflow:hidden}
+.panel{width:var(--panel-w);height:100%;position:relative;padding:9mm 8mm;display:flex;flex-direction:column}
+.spine{width:var(--spine);height:100%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.spine .sp{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:flex;align-items:center;gap:4mm;font-size:min(3.2mm,calc(var(--spine)*.5))}
+.spine .sp b{font-family:"Press Start 2P",monospace;font-size:.85em;font-weight:400}
+
+/* Schnitt- und Falzmarken (außerhalb des Covers) */
+.marks{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);width:calc(var(--panel-w)*2 + var(--spine));pointer-events:none}
+.marks i{position:absolute;background:#000}
+.mh{height:.2mm;width:6mm}.mv{width:.2mm;height:6mm}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:3mm}
+.logo .word{font-family:"Press Start 2P",monospace;font-size:6.2mm;line-height:1.25}
+.logo .word span{color:var(--accent)}
+.logo img{max-height:22mm;max-width:100%;object-fit:contain}
+.heart{width:9mm;height:8mm;flex:none}
+.oneup{font-family:"Press Start 2P",monospace;font-size:2.6mm;color:var(--accent2);margin-top:2.5mm;letter-spacing:.3mm}
+
+/* Titelfeld */
+.titlebox{margin-top:auto;margin-bottom:auto;border:.5mm solid var(--fg);border-radius:2mm;padding:4mm 4mm 3mm;position:relative;min-height:38mm;display:flex;flex-direction:column;justify-content:center;background:var(--field)}
+.titlebox .lbl{position:absolute;top:-2.4mm;left:4mm;background:var(--bg);padding:0 1.5mm;font-family:"Press Start 2P",monospace;font-size:2.2mm;color:var(--accent)}
+.titlebox .t{font-weight:800;font-size:8mm;line-height:1.1;text-align:center;word-break:break-word}
+.titlebox .meta{text-align:center;font-size:3.4mm;color:var(--muted);margin-top:2mm}
+.line{border-bottom:.3mm dashed var(--muted);height:9mm}
+
+.formats{display:flex;gap:5mm;font-size:3.4mm;font-weight:600}
+.formats span::before{content:"";display:inline-block;width:3mm;height:3mm;border:.35mm solid var(--fg);border-radius:.6mm;margin-right:1.4mm;vertical-align:-.4mm}
+.formats span.on::before{background:var(--accent2);border-color:var(--accent2)}
+.tag{font-size:3.3mm;color:var(--muted);margin-top:3mm}
+
+/* Rückseite */
+.back h2{font-family:"Press Start 2P",monospace;font-size:3.8mm;line-height:1.5;font-weight:400;margin-bottom:4mm}
+.back h2 span{color:var(--accent2)}
+.back p{font-size:3.5mm;line-height:1.5;color:var(--fg);opacity:.9;margin-bottom:3mm}
+.checks{list-style:none;font-size:3.5mm;line-height:1.8;margin-bottom:4mm}
+.checks li::before{content:"✔";color:var(--accent2);margin-right:2mm}
+.notes{margin-top:auto}
+.notes .lbl2{font-family:"Press Start 2P",monospace;font-size:2.2mm;color:var(--accent);margin-bottom:1mm}
+.notes .line{height:7.5mm}
+.foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:5mm;gap:4mm}
+.foot .small{font-size:2.8mm;color:var(--muted);line-height:1.5}
+.qr{width:20mm;height:20mm;background:#fff;padding:1.2mm;border-radius:1mm;flex:none}
+.qr img,.qr canvas{width:100%!important;height:100%!important;display:block}
+.pixels{position:absolute;right:6mm;top:6mm;display:grid;grid-template-columns:repeat(3,1.6mm);gap:.8mm;opacity:.6}
+.pixels i{width:1.6mm;height:1.6mm;background:var(--accent)}
+.pixels i:nth-child(2n){background:var(--accent2)}
+
+@media print{
+  @page{size:A4 landscape;margin:0}
+  body{padding:0;background:#fff}
+  .noprint{display:none!important}
+  .scroll{overflow:visible;padding:0}
+  .sheet{box-shadow:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <h1>Bonus Live – Cover für Slim-DVD-Hüllen</h1>
+  <p class="hint">Titel leer lassen = Feld zum Beschriften von Hand. Drucken auf A4 quer, <b>Skalierung 100 % / „Tatsächliche Größe“</b>, Ränder „Keine“, Hintergrundgrafiken an. Schnittmarken außen, kurze Striche oben/unten = Falz am Rücken.</p>
+  <div class="controls">
+    <label>Titel (optional)<input id="title" placeholder="leer = handschriftlich"></label>
+    <label>Zusatz (Jahr, FSK, …)<input id="meta" placeholder="z. B. 2011 · FSK 12"></label>
+    <label>Format ankreuzen<select id="fmt"><option value="">keins (von Hand)</option><option>DVD</option><option>Blu-ray</option><option>CD</option></select></label>
+    <label>Logo-Datei (PNG/SVG)<input type="file" id="logo" accept="image/*"></label>
+    <label>Shop-Link für QR-Code<input id="url" placeholder="https://…"></label>
+    <label>Design<select id="theme"><option value="">Dunkel</option><option value="light">Hell (spart Tinte)</option></select></label>
+    <label>Rücken (mm)<select id="spine"><option>5</option><option selected>7</option><option>9</option><option>14</option></select></label>
+    <label>Seitenbreite (mm)<input id="pw" type="number" step="0.5" value="130"></label>
+    <label>Höhe (mm)<input id="h" type="number" step="0.5" value="183"></label>
+    <div class="row"><button onclick="window.print()">🖨 Drucken</button><button class="sec" onclick="resetLogo()">Logo entfernen</button></div>
+  </div>
+</div>
+
+<div class="scroll">
+<div class="sheet">
+  <div class="cover" id="cover">
+    <!-- Rückseite (links) -->
+    <div class="panel back">
+      <h2>Diese Disc hat ein <span>Extraleben</span> bekommen.</h2>
+      <p>Statt im Regal zu verstauben, geht sie jetzt in die nächste Runde – bei dir.</p>
+      <ul class="checks"><li>Geprüft &amp; abgespielt</li><li>Gereinigt</li><li>Sicher verpackt</li></ul>
+      <div class="notes"><div class="lbl2">NOTIZ</div><div class="line"></div><div class="line"></div></div>
+      <div class="foot">
+        <div class="small"><b>BONUS LIVE</b><br>Second-Hand Filme, Musik &amp; Games<br>Hülle ohne Originalcover</div>
+        <div class="qr" id="qr" hidden></div>
+      </div>
+    </div>
+    <!-- Rücken -->
+    <div class="spine"><div class="sp"><b>BONUS LIVE</b><span id="spTitle"></span></div></div>
+    <!-- Vorderseite (rechts) -->
+    <div class="panel front">
+      <div class="pixels"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div id="logoArea"></div>
+      <div class="oneup">+1 LEBEN</div>
+      <div class="titlebox">
+        <div class="lbl">TITEL</div>
+        <div id="titleOut"></div>
+      </div>
+      <div class="formats" id="formats"><span>DVD</span><span>Blu-ray</span><span>CD</span></div>
+      <div class="tag">Neues Leben für gute Filme.</div>
+    </div>
+  </div>
+  <div class="marks" id="marks"></div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const HEART='<svg class="heart" viewBox="0 0 9 8" shape-rendering="crispEdges"><path fill="var(--accent)" d="M1 0h2v1H1zM6 0h2v1H6zM0 1h4v1H0zM5 1h4v1H5zM0 2h9v2H0zM1 4h7v1H1zM2 5h5v1H2zM3 6h3v1H3zM4 7h1v1H4z"/><path fill="#fff" d="M1 1h1v1H1z"/></svg>';
+let logoData=null;
+try{logoData=localStorage.getItem('bl_logo')}catch(e){}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function render(){
+  const r=document.documentElement.style;
+  r.setProperty('--spine',$('spine').value+'mm');
+  r.setProperty('--panel-w',(parseFloat($('pw').value)||130)+'mm');
+  r.setProperty('--h',(parseFloat($('h').value)||183)+'mm');
+  $('cover').classList.toggle('light',$('theme').value==='light');
+
+  $('logoArea').innerHTML=logoData?'<div class="logo"><img src="'+logoData+'" alt="Logo"></div>'
+    :'<div class="logo">'+HEART+'<div class="word">BONUS<br><span>LIVE</span></div></div>';
+
+  const t=$('title').value.trim(), m=$('meta').value.trim();
+  $('titleOut').innerHTML=t?'<div class="t">'+esc(t)+'</div>'+(m?'<div class="meta">'+esc(m)+'</div>':'')
+    :'<div class="line"></div><div class="line"></div>';
+  $('spTitle').textContent=t;
+
+  const f=$('fmt').value;
+  [...$('formats').children].forEach(s=>s.classList.toggle('on',s.textContent===f));
+
+  const u=$('url').value.trim(), qr=$('qr');
+  qr.innerHTML="";qr.hidden=!(u&&window.QRCode);
+  if(u&&window.QRCode)new QRCode(qr,{text:u,width:256,height:256,correctLevel:QRCode.CorrectLevel.M});
+
+  drawMarks();
+}
+
+function drawMarks(){
+  const pw=parseFloat($('pw').value)||130, sp=parseFloat($('spine').value), h=parseFloat($('h').value)||183;
+  const W=pw*2+sp, g=2, L=6, out=[];
+  const add=(cls,x,y)=>out.push('<i class="'+cls+'" style="left:'+x+'mm;top:'+y+'mm"></i>');
+  // Ecken
+  [[0,0],[W,0],[0,h],[W,h]].forEach(([x,y])=>{
+    add('mh',x<1?-g-L:W+g,y-.1); add('mv',x-.1,y<1?-g-L:h+g);
+  });
+  // Falz am Rücken
+  [pw,pw+sp].forEach(x=>{add('mv',x-.1,-g-L);add('mv',x-.1,h+g)});
+  $('marks').innerHTML=out.join('');
+}
+
+$('logo').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{logoData=rd.result;try{localStorage.setItem('bl_logo',logoData)}catch(e){}render()};
+  rd.readAsDataURL(f);
+});
+function resetLogo(){logoData=null;try{localStorage.removeItem('bl_logo')}catch(e){}$('logo').value='';render()}
+
+document.querySelectorAll('.controls input:not([type=file]),.controls select').forEach(el=>el.addEventListener('input',render));
+render();
+</script>
+</body>
+</html>
