@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonuslife Cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="qrcode.js"></script>
+<style>
+:root{
+  --panel-w:130mm;   /* Breite Vorder-/Rückseite */
+  --spine:7mm;       /* Rückenbreite */
+  --h:183mm;         /* Höhe */
+  --bleed:3mm;       /* Beschnittzugabe */
+  /* Bonuslife-Farben (aus dem Logo) */
+  --cream:#f4ead2; --cream-d:#e8dcbc; --navy:#13204a; --red:#9c1b2b;
+  --bg:var(--cream); --fg:var(--navy); --accent:var(--red); --muted:#5b6380; --field:var(--cream-d);
+  --ui-bg:#f4f5f8; --ui-fg:#1b1d2a; --ui-card:#ffffff; --ui-line:#d9dbe4;
+}
+.white{ --bg:#ffffff; --field:var(--cream); }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --ui-bg:#14151c; --ui-fg:#e8e9ef; --ui-card:#1e2029; --ui-line:#33364a; }
+}
+:root[data-theme="dark"]{ --ui-bg:#14151c; --ui-fg:#e8e9ef; --ui-card:#1e2029; --ui-line:#33364a; }
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-fg);padding:16px}
+h1{font-size:18px;margin-bottom:4px}
+.hint{font-size:13px;opacity:.75;margin-bottom:12px;max-width:900px;line-height:1.45}
+
+/* ---------- Steuerung ---------- */
+.controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;background:var(--ui-card);border:1px solid var(--ui-line);border-radius:12px;padding:14px;margin-bottom:16px;max-width:1123px}
+.controls label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600}
+.controls input,.controls select{font:inherit;font-weight:400;padding:7px 9px;border:1px solid var(--ui-line);border-radius:8px;background:var(--ui-bg);color:var(--ui-fg);min-width:0}
+.controls .row{display:flex;gap:8px;align-items:end}
+.controls button{font:inherit;font-weight:700;padding:9px 14px;border:0;border-radius:8px;background:#9c1b2b;color:#fff;cursor:pointer}
+.controls button.sec{background:var(--ui-line);color:var(--ui-fg)}
+
+/* ---------- Druckbogen A4 quer ---------- */
+.scroll{overflow-x:auto;padding-bottom:8px}
+.sheet{width:297mm;height:210mm;background:#fff;position:relative;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+.cover{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);
+  width:calc(var(--panel-w)*2 + var(--spine));display:flex;background:var(--bg);color:var(--fg);
+  box-shadow:0 0 0 var(--bleed) var(--bg)}  /* Beschnitt: Hintergrund läuft 3 mm über */
+.panel{width:var(--panel-w);height:100%;position:relative;padding:8mm;display:flex;flex-direction:column;overflow:hidden}
+.frame{position:absolute;inset:3.5mm;border:.6mm solid var(--fg);border-radius:2.5mm;pointer-events:none}
+.px{display:block;shape-rendering:crispEdges}
+
+/* Rücken */
+.spine{width:var(--spine);height:100%;position:relative;background:var(--navy);color:var(--cream);display:flex;flex-direction:column;align-items:center}
+.spine::before{content:"";position:absolute;left:0;right:0;top:calc(-1*var(--bleed));bottom:calc(-1*var(--bleed));background:var(--navy)}
+.spine>*{position:relative}
+.spine .cap{width:100%;height:calc(14mm + var(--bleed));margin-top:calc(-1*var(--bleed));padding-top:var(--bleed);background:var(--red);display:flex;align-items:center;justify-content:center}
+.spine .cap .px{width:min(5mm,calc(var(--spine)*.72))}
+.spine .name{flex:1;display:flex;align-items:center;justify-content:center}
+.spine .name b{writing-mode:vertical-rl;transform:rotate(180deg);font-family:"Press Start 2P",monospace;font-weight:400;font-size:min(2.8mm,calc(var(--spine)*.42));letter-spacing:.3mm;white-space:nowrap}
+.spine .write{width:calc(100% - 1.6mm);height:62mm;background:var(--cream-d);border-radius:.6mm;margin-bottom:6mm}
+
+/* Schnitt- und Falzmarken (außerhalb des Beschnitts) */
+.marks{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:var(--h);width:calc(var(--panel-w)*2 + var(--spine));pointer-events:none}
+.marks i{position:absolute;background:#000}
+.mh{height:.2mm;width:5mm}.mv{width:.2mm;height:5mm}
+
+/* Vorderseite */
+.front{align-items:center;text-align:center}
+.badge{width:50mm;height:50mm;margin-top:9mm}
+.edition{position:relative;display:flex;align-items:center;justify-content:center;gap:2.2mm;color:var(--cream);font-family:"Press Start 2P",monospace;font-size:3.2mm;letter-spacing:.3mm}
+.edition .px{width:3mm}
+.edition.ribbon{width:84mm;height:12mm;margin-top:5mm}
+.edition.ribbon>svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.edition.bar{align-self:stretch;height:13mm;margin-top:3mm;background:var(--navy);border-radius:1.5mm}
+.edition>*{position:relative}
+.badge img,.badge svg{width:100%;height:100%;object-fit:contain;display:block}
+.brand{font-family:"Press Start 2P",monospace;font-size:6mm;margin-top:6mm;letter-spacing:.4mm}
+.brand span{color:var(--accent)}
+.titlefield{align-self:stretch;margin-top:10mm;height:20mm;border:.5mm solid var(--fg);border-radius:2mm;background:var(--field);display:flex;align-items:center;justify-content:center;padding:0 4mm;overflow:hidden}
+.titlefield .t{font-weight:800;font-size:5.2mm;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Rückseite */
+.head{position:relative;background:var(--navy);color:var(--cream);border-radius:2mm;padding:5mm 5mm 4.5mm}
+.head h2{font-family:"Press Start 2P",monospace;font-size:4.2mm;line-height:1.7;font-weight:400}
+.head h2 span{background:var(--red);padding:0 1mm;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.head p{font-size:3.5mm;line-height:1.45;margin-top:2.5mm;opacity:.88}
+.thanks{margin-top:5mm;font-weight:800;font-size:4mm;color:var(--accent);text-align:center}
+.qrs{margin:auto 0;display:flex;gap:6mm;justify-content:center}
+.qrcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2mm;max-width:52mm}
+.qrcard .k{font-family:"Press Start 2P",monospace;font-size:2.5mm;line-height:1.5;color:var(--accent)}
+.qr{width:28mm;height:28mm;background:#fff;padding:1.6mm;border-radius:1.6mm;border:.5mm solid var(--navy)}
+.qr svg{width:100%;height:100%;display:block}
+.qrcard .lbl{display:flex;align-items:center;gap:1.6mm;font-size:3.1mm;font-weight:800}
+.qrcard .lbl .px{width:4.2mm}
+.qrcard .lbl small{font-weight:400;color:var(--muted)}
+/* nur ein Code: quer, mit Text daneben */
+.qrs.single .qrcard{flex-direction:row;max-width:none;text-align:left;gap:5mm}
+.qrs.single .qr{width:36mm;height:36mm;flex:none}
+.qrs.single .txt{display:flex;flex-direction:column;gap:2.2mm;align-items:flex-start}
+.qrs.single .k{font-size:3mm}
+.qrcard .cta{font-size:3.3mm;line-height:1.4}
+.bottom{text-align:center;align-self:stretch;margin-top:auto}
+.slogan{font-family:"Press Start 2P",monospace;font-size:2.8mm;margin-bottom:2.5mm}
+.slogan span{color:var(--accent)}
+.dither{display:block;width:100%;height:8mm}
+
+@media print{
+  @page{size:A4 landscape;margin:0}
+  body{padding:0;background:#fff}
+  .noprint{display:none!important}
+  .scroll{overflow:visible;padding:0}
+  .sheet{box-shadow:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <h1>Bonuslife – Cover für Slim-DVD-Hüllen</h1>
+  <p class="hint">Titel leer lassen = Feld zum Beschriften von Hand (vorne und auf dem Rücken). Drucken auf A4 quer, <b>Skalierung 100 % / „Tatsächliche Größe“</b>, Ränder „Keine“, Hintergrundgrafiken an. An den Schnittmarken schneiden (3 mm Beschnitt sind eingerechnet), kurze Striche oben/unten = Falz am Rücken.</p>
+  <div class="controls">
+    <label>Titel (optional)<input id="title" placeholder="leer = handschriftlich"></label>
+    <label>eBay-Shop-Link<input id="url" value="https://www.ebay.de/usr/bonuslife-shop"></label>
+    <label>Instagram-Link<input id="insta" placeholder="leer = nur Shop-Code"></label>
+    <label>Original-Logo (PNG/SVG, optional)<input type="file" id="logo" accept="image/*"></label>
+    <label>Kopf vorne<select id="head"><option value="ribbon">Edition-Band (rot)</option><option value="bar">Edition-Leiste (navy)</option><option value="none">ohne</option></select></label>
+    <label>Hintergrund<select id="theme"><option value="">Creme</option><option value="white">Weiß (für Creme-Papier / spart Tinte)</option></select></label>
+    <label>Rücken (mm)<select id="spine"><option>5</option><option selected>7</option><option>9</option><option>14</option></select></label>
+    <label>Seitenbreite (mm)<input id="pw" type="number" step="0.5" value="130"></label>
+    <label>Höhe (mm)<input id="h" type="number" step="0.5" value="183"></label>
+    <div class="row"><button onclick="window.print()">🖨 Drucken</button><button class="sec" onclick="resetLogo()">Logo zurücksetzen</button></div>
+  </div>
+</div>
+
+<div class="scroll">
+<div class="sheet">
+  <div class="cover" id="cover">
+    <!-- Rückseite (links) -->
+    <div class="panel back">
+      <div class="frame"></div>
+      <div class="head">
+        <h2>Diese Disc hat ein <span>Extraleben</span> bekommen.</h2>
+        <p>Gebraucht, aber nicht verbraucht – sorgfältig geprüft und gereinigt.</p>
+      </div>
+      <div class="thanks">Danke, dass du gebraucht kaufst!</div>
+      <div class="qrs" id="qrs"></div>
+      <div class="bottom">
+        <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
+        <svg class="dither" data-dither preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+    <!-- Rücken -->
+    <div class="spine">
+      <div class="cap" data-px="heartCream"></div>
+      <div class="name"><b>BONUSLIFE</b></div>
+      <div class="write"></div>
+    </div>
+    <!-- Vorderseite (rechts) -->
+    <div class="panel front">
+      <div class="frame"></div>
+      <div class="edition ribbon" id="edition"><span data-px="heartCream"></span><span>EXTRALEBEN EDITION</span><span data-px="heartCream"></span></div>
+      <div class="badge" id="logoArea"></div>
+      <div class="brand">BONUS<span>LIFE</span></div>
+      <div class="titlefield" id="titleOut"></div>
+      <div class="bottom">
+        <div class="slogan">USED ONCE. <span>LOVED TWICE.</span></div>
+        <svg class="dither" data-dither preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+  </div>
+  <div class="marks" id="marks"></div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const NAVY='#13204a',RED='#9c1b2b',CREAM='#f4ead2';
+
+// Pixel-Grafiken (# = gefüllt)
+const HEART=['.##.##.','#######','#######','.#####.','..###..','...#...'];
+const PX={
+  heartCream:{c:CREAM,g:HEART},
+  bag:{c:NAVY,g:['....####....','...#....#...','...#....#...','.##########.','.#........#.','.#........#.','.#........#.','.#........#.','.#........#.','.#........#.','.##########.']},
+  cam:{c:NAVY,g:['.##########.','#..........#','#.......##.#','#...####...#','#..#....#..#','#..#....#..#','#..#....#..#','#..#....#..#','#...####...#','#..........#','.##########.']}
+};
+function pxSVG(name){
+  const {c,g}=PX[name];let r='';
+  g.forEach((row,y)=>[...row].forEach((ch,x)=>{if(ch==='#')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}));
+  return `<svg class="px" viewBox="0 0 ${g[0].length} ${g.length}" fill="${c}">${r}</svg>`;
+}
+function fillPx(root){root.querySelectorAll('[data-px]').forEach(el=>el.insertAdjacentHTML('afterbegin',pxSVG(el.dataset.px)))}
+
+// Bonuslife-Logo: Ring + Pixel-Herz mit "+1" (ohne Bogentext). Wird durch ein hochgeladenes Logo ersetzt.
+function badgeSVG(){
+  const rows=[[2,4,8,10],[1,5,7,11],[0,12],[0,12],[0,12],[1,11],[2,10],[3,9],[4,8],[5,7],[6,6]];
+  const u=10,ox=35,oy=50,o=2.4;let navy='',red='';
+  rows.forEach((r,y)=>{for(let i=0;i<r.length;i+=2){const x=ox+r[i]*u,w=(r[i+1]-r[i]+1)*u,yy=oy+y*u;
+    navy+=`<rect x="${x-o}" y="${yy-o}" width="${w+2*o}" height="${u+2*o}"/>`;
+    red+=`<rect x="${x}" y="${yy}" width="${w}" height="${u+.5}"/>`;}});
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <circle cx="100" cy="100" r="94" fill="${CREAM}" stroke="${NAVY}" stroke-width="9"/>
+  <g fill="${NAVY}">${navy}</g><g fill="${RED}">${red}</g>
+  <g fill="${CREAM}">${plusOne(100,95,3.6)}</g>
+</svg>`;
+}
+
+// "+1" als Pixel (wie Profilbild), cx/cy = Mittelpunkt, s = Pixelgröße
+function plusOne(cx,cy,s){
+  const one=['..##..','.###..','..##..','..##..','..##..','..##..','######'];
+  const plus=['..##..','..##..','######','######','..##..','..##..'];
+  const ox=cx-7*s,oy=cy-3.5*s;let r='';
+  const put=(g,dx,dy)=>g.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${ox+(dx+x)*s}" y="${oy+(dy+y)*s}" width="${s+.1}" height="${s+.1}"/>`}));
+  put(plus,0,.5);put(one,8,0);return r;
+}
+
+// Rotes Band mit gestuften Schwalbenschwanz-Enden (84 × 12 mm)
+function ribbonSVG(){
+  const W=84,pts=[[W,0],[W,2],[W-1.5,2],[W-1.5,4],[W-3,4],[W-3,8],[W-1.5,8],[W-1.5,10],[W,10],[W,12],
+    [0,12],[0,10],[1.5,10],[1.5,8],[3,8],[3,4],[1.5,4],[1.5,2],[0,2],[0,0]];
+  return `<svg class="bg" viewBox="0 0 ${W} 12" preserveAspectRatio="none" shape-rendering="crispEdges"><polygon fill="${RED}" points="${pts.map(p=>p.join(',')).join(' ')}"/></svg>`;
+}
+
+// Pixel-Verlauf (geordnetes Dithering) als Abschluss der Rückseite
+function drawDither(){
+  const W=110,H=8,B=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];let r='';
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(B[y%4][x%4]/16<(y+1)/H*.95)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}
+  document.querySelectorAll('[data-dither]').forEach(d=>{d.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    d.innerHTML=`<g fill="${NAVY}" shape-rendering="crispEdges">${r}</g>`;});
+}
+
+function qrSVG(url){const q=qrcode(0,'M');q.addData(url);q.make();return q.createSvgTag(4,0).replace(/fill="black"|fill="#000000"/g,`fill="${NAVY}"`)}
+function lastSeg(url){const m=url.replace(/\/+$/,'').match(/([^\/?#]+)(?:[?#].*)?$/);return m?m[1]:url}
+
+function renderQRs(){
+  const shop=$('url').value.trim(), ig=$('insta').value.trim(), box=$('qrs');
+  const shopLbl=`<div class="lbl">${pxSVG('bag')}<span>eBay-Shop <small>${esc(shop.replace(/^https?:\/\/(www\.)?/,'').replace(/\/+$/,''))}</small></span></div>`;
+  if(shop&&!ig){
+    box.className='qrs single';
+    box.innerHTML=`<div class="qrcard"><div class="qr">${qrSVG(shop)}</div><div class="txt">
+      <div class="k">BESUCH UNSEREN SHOP</div>
+      <div class="cta">Code scannen und stöbern: Filme, Musik, Games, Comics, Vinyl &amp; Sammlerstücke aus zweiter Hand.</div>${shopLbl}</div></div>`;
+    return;
+  }
+  box.className='qrs';
+  box.innerHTML=(shop?`<div class="qrcard"><div class="k">UNSER<br>EBAY-SHOP</div><div class="qr">${qrSVG(shop)}</div>${shopLbl}</div>`:'')+
+    (ig?`<div class="qrcard"><div class="k">NEUZUGÄNGE AUF<br>INSTAGRAM</div><div class="qr">${qrSVG(ig)}</div><div class="lbl">${pxSVG('cam')}<span>Instagram <small>@${esc(lastSeg(ig))}</small></span></div></div>`:'');
+}
+
+let logoData=null;
+try{logoData=localStorage.getItem('bl_logo')}catch(e){}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function render(){
+  const r=document.documentElement.style;
+  r.setProperty('--spine',$('spine').value+'mm');
+  r.setProperty('--panel-w',(parseFloat($('pw').value)||130)+'mm');
+  r.setProperty('--h',(parseFloat($('h').value)||183)+'mm');
+  $('cover').classList.toggle('white',$('theme').value==='white');
+
+  $('logoArea').innerHTML=logoData?'<img src="'+logoData+'" alt="Bonuslife Logo">':badgeSVG();
+  const t=$('title').value.trim();
+  $('titleOut').innerHTML=t?'<div class="t">'+esc(t)+'</div>':'';
+  const hd=$('head').value,ed=$('edition');
+  ed.hidden=hd==='none';ed.className='edition '+(hd==='none'?'':hd);
+  ed.querySelector('svg.bg')?.remove();
+  if(hd==='ribbon')ed.insertAdjacentHTML('afterbegin',ribbonSVG());
+  renderQRs();
+  drawMarks();
+}
+
+function drawMarks(){
+  const pw=parseFloat($('pw').value)||130, sp=parseFloat($('spine').value), h=parseFloat($('h').value)||183;
+  const W=pw*2+sp, g=4, L=5, out=[];  // g > Beschnitt, damit die Marken frei bleiben
+  const add=(cls,x,y)=>out.push('<i class="'+cls+'" style="left:'+x+'mm;top:'+y+'mm"></i>');
+  // Ecken
+  [[0,0],[W,0],[0,h],[W,h]].forEach(([x,y])=>{
+    add('mh',x<1?-g-L:W+g,y-.1); add('mv',x-.1,y<1?-g-L:h+g);
+  });
+  // Falz am Rücken
+  [pw,pw+sp].forEach(x=>{add('mv',x-.1,-g-L);add('mv',x-.1,h+g)});
+  $('marks').innerHTML=out.join('');
+}
+
+$('logo').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{logoData=rd.result;try{localStorage.setItem('bl_logo',logoData)}catch(e){}render()};
+  rd.readAsDataURL(f);
+});
+function resetLogo(){logoData=null;try{localStorage.removeItem('bl_logo')}catch(e){}$('logo').value='';render()}
+
+document.querySelectorAll('.controls input:not([type=file]),.controls select').forEach(el=>el.addEventListener('input',render));
+fillPx(document);drawDither();render();
+if(document.fonts)document.fonts.ready.then(render);
+</script>
+</body>
+</html>
