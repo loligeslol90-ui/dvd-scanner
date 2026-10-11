@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bonuslife Ankauf: Filme, Musik, Games und mehr verkaufen</title>
+<meta name="description" content="Verkauf uns deine Filme, Musik, Games, Comics, Vinyl und Sammlerstücke. Liste eintragen, abschicken, Angebot bekommen. Bonuslife gibt jedem Stück ein Extraleben.">
+<meta name="theme-color" content="#13204a">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/tweaks.css">
+<script>document.documentElement.classList.add("js")</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "Bonuslife",
+  "slogan": "Used once. Loved twice.",
+  "description": "Ankauf und Verkauf gebrauchter Filme, Musik, Games, Comics, Vinyl und Sammlerstücke. Jedes Stück wird geprüft und gereinigt.",
+  "sameAs": ["https://www.ebay.de/usr/bonuslife-shop"]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#inhalt">Zum Inhalt springen</a>
+
+<!-- Laufband: Einträge mit data-quelle-Eintrag werden aus den Live-Angeboten ergänzt, siehe daten/README.md -->
+<div class="laufband" data-laufband data-quelle="daten/angebote.json" role="region" aria-label="Neuigkeiten">
+  <div class="laufband-spur">
+    <ul class="laufband-liste">
+      <li><img src="assets/img/px/heart-creme.svg" alt="" width="14" height="12"><b>Ankauf:</b> Filme · Musik · Games · Comics · Vinyl · Sammlerstücke</li>
+      <li><img src="assets/img/px/bag-creme.svg" alt="" width="14" height="13"><a href="https://www.ebay.de/usr/bonuslife-shop" rel="noopener"><b>Neu im eBay-Shop:</b> jeden Tag frische Stücke</a></li>
+      <li><img src="assets/img/px/sammler-creme.svg" alt="" width="14" height="12"><b>Wir suchen Verstärkung:</b> mehr Infos folgen</li>
+      <li class="laufband-slogan">USED ONCE. <span>LOVED TWICE.</span></li>
+    </ul>
+  </div>
+  <button class="laufband-pause" type="button" aria-pressed="false" aria-label="Laufband anhalten">
+    <svg viewBox="0 0 4 5" width="10" height="12" aria-hidden="true" shape-rendering="crispEdges"><rect x="0" width="1.4" height="5"/><rect x="2.6" width="1.4" height="5"/></svg>
+  </button>
+</div>
+
+<header class="kopf">
+  <div class="wrap kopf-in">
+    <a class="marke" href="#top" aria-label="Bonuslife, zum Seitenanfang">
+      <img src="assets/img/logo.svg" alt="" width="40" height="40">
+      <span class="wortmarke">BONUS<span>LIFE</span></span>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="#liste">Ankaufsliste</a>
+      <a href="#ablauf">So läuft's</a>
+      <a href="#kategorien">Was wir suchen</a>
+      <a href="#shop">Shop</a>
+    </nav>
+    <a class="btn btn-rot btn-klein" href="#liste">Liste starten</a>
+  </div>
+</header>
+
+<main id="inhalt">
+
+  <!-- Einstieg: Vorderseite der Hülle mit Ankaufsliste -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="huelle">
+        <div class="huelle-text">
+          <div class="band"><img src="assets/img/px/heart-creme.svg" alt="" width="14" height="12">EXTRALEBEN EDITION<img src="assets/img/px/heart-creme.svg" alt="" width="14" height="12"></div>
+          <h1>Deine Sammlung verdient ein <span class="mark">Extraleben.</span></h1>
+          <p class="lead">Verkauf uns deine Filme, Musik, Games, Comics, Vinyl und Sammlerstücke. Wir prüfen und reinigen jedes Stück und geben es an Leute weiter, die es lieben.</p>
+          <div class="leben" aria-hidden="true">
+            <img class="ring" src="assets/img/logo.svg" alt="" width="200" height="200">
+            <span class="plus">+1</span>
+          </div>
+        </div>
+
+        <form class="ankauf-box" id="liste" data-ankauf data-endpoint="" data-mail="" novalidate aria-labelledby="liste-titel">
+          <h2 id="liste-titel" class="box-titel">ANKAUF</h2>
+          <fieldset class="eingabe">
+            <legend class="sr">Stück hinzufügen</legend>
+            <label class="feld feld-breit">Barcode (EAN) oder Titel
+              <input name="stueck" autocomplete="off" placeholder="z. B. 4010232012345 oder Zurück in die Zukunft" maxlength="160">
+            </label>
+            <label class="feld">Kategorie
+              <select name="kategorie">
+                <option>Filme</option><option>Musik</option><option>Games</option><option>Comics</option><option>Vinyl</option><option>Sammlerstücke</option>
+              </select>
+            </label>
+            <label class="feld">Zustand
+              <select name="zustand">
+                <option>wie neu</option><option selected>sehr gut</option><option>gut</option><option>mit Gebrauchsspuren</option>
+              </select>
+            </label>
+            <button class="btn btn-linie btn-hinzu" type="button" data-hinzu>
+              <svg viewBox="0 0 6 6" width="12" height="12" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor"><rect x="2" width="2" height="6"/><rect y="2" width="6" height="2"/></svg>Auf die Liste
+            </button>
+            <p class="fehler" data-fehler-stueck hidden>Trag einen Barcode oder Titel ein.</p>
+          </fieldset>
+
+          <div class="liste" aria-live="polite">
+            <p class="liste-zahl" data-zahl>Noch nichts auf deiner Liste. Fang mit dem ersten Stück an.</p>
+            <ul data-liste></ul>
+          </div>
+
+          <div class="senden" data-senden hidden>
+            <label class="feld feld-breit">Deine E-Mail-Adresse
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+            <label class="feld feld-breit">Nachricht (optional)
+              <textarea name="nachricht" rows="2" maxlength="2000"></textarea>
+            </label>
+            <label class="haken"><input type="checkbox" name="einwilligung" required><span>Ich bin einverstanden, dass Bonuslife meine Angaben zur Bearbeitung der Anfrage speichert. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</span></label>
+            <input class="honig" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="btn btn-rot btn-senden" type="submit">Liste senden</button>
+            <p class="fehler" data-fehler-senden hidden></p>
+          </div>
+
+          <div class="danke-box" data-danke hidden tabindex="-1">
+            <img src="assets/img/px/heart-rot.svg" alt="" width="35" height="30">
+            <p><b>Danke!</b> Deine Liste ist bei uns angekommen.</p>
+          </div>
+        </form>
+
+        <p class="slogan">USED ONCE. <span>LOVED TWICE.</span></p>
+        <div class="dither" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ablauf als Pfad -->
+  <section class="ablauf" id="ablauf" aria-labelledby="ablauf-titel">
+    <div class="wrap">
+      <h2 id="ablauf-titel">So bekommt deine Sammlung ein <span class="mark">Extraleben</span></h2>
+      <ol class="pfad" data-pfad>
+        <li><span class="nr">1</span><h3>Liste schicken</h3><p>Trag ein, was du verkaufen willst, und schick uns die Liste.</p></li>
+        <li><span class="nr">2</span><h3>Angebot bekommen</h3><p>Wir schauen uns deine Liste an und melden uns mit einem Angebot.</p></li>
+        <li><span class="nr nr-herz"><img src="assets/img/px/heart-creme.svg" alt="" width="28" height="24"></span><h3>Neues Leben</h3><p>Wenn du einverstanden bist, geben wir deinen Stücken ein Extraleben.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Was wir ankaufen: DVD-Rücken im Regal -->
+  <section class="kategorien" id="kategorien" aria-labelledby="kat-titel">
+    <div class="wrap">
+      <h2 id="kat-titel">Was wir ankaufen</h2>
+      <p class="kat-hinweis">Tipp auf einen Rücken, dann landet die Kategorie direkt in deiner Liste.</p>
+      <ul class="ruecken">
+        <li><a href="#liste" data-kategorie="Filme"><span class="kappe"><img src="assets/img/px/film-creme.svg" alt="" width="24" height="20"></span><b>FILME</b></a></li>
+        <li><a href="#liste" data-kategorie="Musik"><span class="kappe"><img src="assets/img/px/musik-creme.svg" alt="" width="22" height="20"></span><b>MUSIK</b></a></li>
+        <li><a href="#liste" data-kategorie="Games"><span class="kappe"><img src="assets/img/px/games-creme.svg" alt="" width="24" height="16"></span><b>GAMES</b></a></li>
+        <li><a href="#liste" data-kategorie="Comics"><span class="kappe"><img src="assets/img/px/comics-creme.svg" alt="" width="24" height="20"></span><b>COMICS</b></a></li>
+        <li><a href="#liste" data-kategorie="Vinyl"><span class="kappe"><img src="assets/img/px/vinyl-creme.svg" alt="" width="24" height="20"></span><b>VINYL</b></a></li>
+        <li><a href="#liste" data-kategorie="Sammlerstücke"><span class="kappe"><img src="assets/img/px/sammler-creme.svg" alt="" width="24" height="20"></span><b>SAMMLERSTÜCKE</b></a></li>
+      </ul>
+      <div class="regalbrett" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Shop und Kanäle -->
+  <section class="folgen" id="shop" aria-labelledby="shop-titel">
+    <div class="wrap">
+      <h2 id="shop-titel">Lieber selbst stöbern?</h2>
+      <p>Alles, was bei uns ein Extraleben bekommen hat, findest du im eBay-Shop.</p>
+      <div class="kanaele">
+        <a class="kanal" href="https://www.ebay.de/usr/bonuslife-shop" rel="noopener">
+          <img src="assets/img/px/bag-creme.svg" alt="" width="36" height="33">
+          <span><b>Zum eBay-Shop</b><small>ebay.de/usr/bonuslife-shop</small></span>
+        </a>
+        <div class="kanal kanal-bald" aria-disabled="true">
+          <img src="assets/img/px/cam-creme.svg" alt="" width="36" height="33">
+          <span><b>Instagram</b><small>Account folgt</small></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="danke">
+    <div class="wrap danke-in">
+      <img src="assets/img/px/heart-creme.svg" alt="" width="21" height="18">
+      <p>Danke, dass du gebraucht kaufst!</p>
+      <img src="assets/img/px/heart-creme.svg" alt="" width="21" height="18">
+    </div>
+  </div>
+
+</main>
+
+<footer class="fuss">
+  <div class="wrap fuss-in">
+    <p class="wortmarke">BONUS<span>LIFE</span></p>
+    <p class="slogan">USED ONCE. <span>LOVED TWICE.</span></p>
+    <nav aria-label="Rechtliches"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>

@@ -7,11 +7,11 @@ Status: ✅ erledigt · 🔄 läuft · ⬜ offen
 | Phase | Name | Status | Datum |
 |---|---|---|---|
 | 0 | Einrichten | ✅ | 11.10.2026 |
-| 1 | Fundament | 🔄 | 11.10.2026 |
-| 2 | Recherche | ⬜ | |
-| 3 | Texte | ⬜ | |
+| 1 | Fundament | 🔄 Markenprofil und PRODUCT.md fertig, Bestätigung offen | 11.10.2026 |
+| 2 | Recherche | ⏭ vorerst übersprungen | 11.10.2026 |
+| 3 | Texte | 🔄 Entwurf 2 in `texte.md` | 11.10.2026 |
 | 4 | Design-Richtung | ⬜ | |
-| 5 | Bauen | ⬜ | |
+| 5 | Bauen | 🔄 Grundstruktur steht (`index.html`) | 11.10.2026 |
 | 6 | Prüfen und Feinschliff | ⬜ | |
 | 7 | Livegang | ⬜ | |
 | 8 | Danach | ⬜ | |
@@ -19,10 +19,10 @@ Status: ✅ erledigt · 🔄 läuft · ⬜ offen
 ## Ausgangslage
 
 - Bestehende Website oder Marke: Marke **Bonuslife** vorhanden (Logo, Banner, Profilbilder in `../brand/`, DVD-Cover in `../cover/`). Keine Website. Verkauf bisher über eBay-Shop https://www.ebay.de/usr/bonuslife-shop
-- Hauptziel der Seite: offen (Vermutung: Besucher in den eBay-Shop und zu Instagram führen, siehe offene Fragen)
+- Hauptziel der Seite: **Ankauf.** Besucher stellen eine Liste zusammen und schicken sie. Laufband oben mit aktiven Angeboten (live aus der Datenbank), Jobwerbung, Neuigkeiten. Später eventuell Direktkauf (Shopify-artig).
 - Hosting: offen, wird in Phase 7 entschieden
 - Projektordner: `website/` im Repo `dvd-scanner`, damit die App-Dateien `index.html` und `map.html` im Hauptordner unberührt bleiben
-- Werkzeuge: impeccable 🔶 (Anleitungen im Projekt unter `.claude/skills/impeccable/`; das Hilfsprogramm mit den automatischen Prüfungen läuft in der Cloud nicht, lokal am Rechner vorhanden) · Playwright ✅ (Python, Version 1.56 passend zum vorinstallierten Chromium) · DataForSEO ⬜ (noch nicht entschieden) · Hosting-MCP ⬜ · Formular-Ziel ⬜
+- Werkzeuge: impeccable 🔶 (Anleitungen im Projekt unter `.claude/skills/impeccable/`; das Hilfsprogramm mit den automatischen Prüfungen läuft in der Cloud nicht, lokal am Rechner vorhanden) · Playwright ✅ (Python, Version 1.56 passend zum vorinstallierten Chromium) · DataForSEO ⏭ (vorerst nicht, erst wenn der Ankauf über Google gefunden werden soll) · Hosting-MCP ⬜ · Formular-Ziel ⬜
 
 ## Marke
 
@@ -41,15 +41,19 @@ Gemessen aus den Logo-SVGs (`../brand/export/*.svg`) und den CSS-Variablen von C
 ## Entscheidungen
 
 - 11.10.2026: Die Seite übernimmt den Stil der Bonuslife-DVD-Hülle.
-- 11.10.2026: Erst eine Grundstruktur bauen und ansehen, Inhalte liefert die Person nach und nach.
+- 11.10.2026: Erst eine Grundstruktur bauen und ansehen, Inhalte liefert die Person nach und nach. Recherche (Phase 2) und eigene Design-Richtung (Phase 4) dafür vorerst übersprungen: Die Richtung ist die DVD-Hülle.
+- 11.10.2026: Planänderung: Die Seite ist eine Ankaufsseite (Vorbild momox, rebuy). Oben ein Laufband mit Angeboten, Jobwerbung und Neuigkeiten.
+- 11.10.2026: Betreiber bleiben anonym, Ansprache mit „du“.
+- 11.10.2026: Live-Angebote kommen aus einer JSON-Quelle (`daten/README.md`), damit die Datenbank des Kumpels angeschlossen werden kann.
 
 ## Offene Fragen an die Person
 
-- Für wen ist die Seite, woher kommen die Besucher?
-- Hauptziel der Seite
-- Instagram-Adresse
-- Wer steckt hinter Bonuslife (Person, Ort), was darf auf die Seite?
-- DataForSEO ja oder nein
+- Wie läuft der Ankauf genau (Versand, Bezahlung, Fristen)? Bis dahin sagt die Seite nur „wir melden uns mit einem Angebot“.
+- Wohin geht die Ankaufsliste: E-Mail-Adresse oder Schnittstelle der Datenbank?
+- Text für die Jobwerbung im Laufband
+- Instagram-Adresse und weitere Kanäle
+- Impressum: Wer ist rechtlich verantwortlich? Eine gewerbliche Seite braucht ein Impressum mit Name und ladungsfähiger Anschrift, ganz anonym geht es nicht.
+- Adresse der Datenbank-Schnittstelle für die Live-Angebote
 
 ## Update-Ablauf nach dem Livegang
 

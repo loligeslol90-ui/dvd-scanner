@@ -1,0 +1,8 @@
+{
+  "angebote": [
+    { "titel": "Beispiel-Film auf DVD", "kategorie": "Filme", "preis": 4.99, "url": "https://www.ebay.de/usr/bonuslife-shop" },
+    { "titel": "Beispiel-Album auf CD", "kategorie": "Musik", "preis": 6.5, "url": "https://www.ebay.de/usr/bonuslife-shop" },
+    { "titel": "Beispiel-Spiel", "kategorie": "Games", "preis": 12, "url": "https://www.ebay.de/usr/bonuslife-shop" },
+    { "titel": "Beispiel-Schallplatte", "kategorie": "Vinyl", "preis": 15, "url": "https://www.ebay.de/usr/bonuslife-shop" }
+  ]
+}
